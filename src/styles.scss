@@ -5,7 +5,6 @@
 @use './assets/demo/demo.scss';
 
 .card-glass {
-        background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
         border-radius: var(--border-radius);
         transition: all 0.3s ease;
