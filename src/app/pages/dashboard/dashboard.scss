@@ -1,0 +1,453 @@
+.dashboard-container {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.header-section {
+    margin-bottom: 2rem;
+}
+
+.logo-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.logo-container {
+    background-color: var(--primary-color);
+    color: white;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.stats-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+    height: 100%;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-label {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.icon-background {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.document-bg {
+    background-color: var(--primary-color);
+}
+
+.money-bg {
+    background-color: var(--green-500);
+}
+
+.alert-bg {
+    background-color: var(--orange-500);
+}
+
+.bill-dialog .p-dialog-content {
+    padding: 2rem 1.5rem 1rem 1.5rem;
+}
+
+:host ::ng-deep {
+    .p-datatable .p-datatable-thead > tr > th {
+        background-color: var(--surface-ground);
+        color: var(--text-color);
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+    }
+    
+    .p-datatable .p-datatable-tbody > tr > td {
+        padding: 0.75rem 1rem;
+    }
+    
+    .p-dropdown {
+        width: 100%;
+    }
+    
+    .p-toolbar {
+        background: transparent;
+        border: none;
+        padding: 1rem 0;
+    }
+
+    // Advanced filtering styles
+    .p-column-filter-menu-button {
+        margin-left: 0.5rem;
+    }
+
+    .p-datatable .p-datatable-thead > tr > th .flex {
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .p-column-filter-overlay {
+        min-width: 250px;
+    }
+
+
+    // Clear button styling
+    .p-button-outlined {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+}
+
+:host ::ng-deep {
+    // Header and title styles
+    .header-text {
+        background: linear-gradient(to right, var(--p-primary-color), var(--p-primary-700));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        position: relative;
+    }
+
+    .title-text {
+        font-size: 2.5rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        background: linear-gradient(to right, var(--p-primary-color), var(--p-primary-600));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: fadeInDown 0.5s ease-out;
+    }
+
+    .title-underline {
+        height: 4px;
+        width: 120px;
+        margin: 0 auto;
+        background: linear-gradient(to right, var(--p-primary-color), var(--p-primary-600));
+        border-radius: 2px;
+        animation: widthGrow 0.6s ease-out forwards;
+    }
+
+    .header-underline {
+        height: 3px;
+        width: 100px;
+        margin: 0 auto;
+        background: linear-gradient(to right, var(--p-primary-color), var(--p-primary-700));
+        border-radius: 2px;
+    }
+
+    .header-underline-dialog {
+        height: 3px;
+        width: 70px;
+        margin: 0 auto;
+        background: linear-gradient(to right, var(--p-primary-color), var(--p-primary-700));
+        border-radius: 2px;
+    }
+
+    // Card and interaction styles
+    .card-glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+        border: 1px solid var(--surface-border);
+    }
+
+    .hover-scale {
+        transition: transform 0.2s ease;
+        &:hover {
+            transform: scale(1.02);
+        }
+    }
+
+    .p-button {
+        transition: all 0.2s ease;
+    }
+
+    // Table styles
+    .p-datatable {
+        .p-datatable-header {
+            background: transparent;
+            border: none;
+        }
+
+        .p-datatable-thead > tr > th {
+            background: var(--surface-ground);
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 1rem;
+        }        .p-datatable-tbody > tr {
+            transition: all 0.2s ease;
+
+            &:hover {
+                background: var(--surface-hover);
+                transform: translateY(-2px);
+            }            &.user-own-demande {
+                background-color: color-mix(in srgb, var(--p-primary-color) 10%, transparent);
+                
+                &:hover {
+                    background-color: color-mix(in srgb, var(--p-primary-color) 15%, transparent);
+                    transform: translateY(-2px);
+                }
+            }
+        }
+
+        .p-button.p-button-text {
+            &:hover {
+                background: var(--p-primary-50);
+                color: var(--p-primary-color);
+            }
+        }
+
+        // Search and filter container styles
+        .search-container {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        
+        .actions-container {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+        
+        .p-iconfield {
+            width: 100%;
+            
+            .p-inputtext {
+                width: 100%;
+            }
+        }
+    }
+
+    // Form control styles
+    .p-inputtext {
+        border-radius: 1rem;
+
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: var(--p-primary-color);
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 2px var(--p-primary-50);
+        }
+    }
+
+    // Styles for the radio buttons
+    .p-radiobutton {
+        margin-right: 0.5rem;
+        
+        .p-radiobutton-box {
+            &.p-highlight {
+                border-color: var(--p-primary-color);
+                background: var(--p-primary-color);
+            }
+            
+            &:not(.p-disabled):hover {
+                border-color: var(--p-primary-color);
+            }
+        }
+    }
+    
+    // SelectButton styles
+    .p-selectbutton {
+        .p-button {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            
+            &.p-highlight {
+                background: var(--p-primary-color);
+                border-color: var(--p-primary-color);
+                color: var(--p-primary-color-text);
+            }
+            
+            &:not(.p-disabled):not(.p-highlight):hover {
+                border-color: var(--p-primary-color);
+                color: var(--p-primary-color);
+            }
+        }
+    }
+
+    // Responsive adjustments
+    @media screen and (max-width: 768px) {
+        .p-datatable-header {
+            flex-direction: column;
+            
+            > div {
+                margin-bottom: 1rem;
+                width: 100%;
+            }
+        }
+
+        .p-datatable .p-datatable-header {
+            > div.flex-column {
+                > div:first-child {
+                    margin-right: 0 !important;
+                    margin-bottom: 0.5rem;
+                }
+            }
+
+            .search-container, .actions-container {
+                width: 100%;
+            }
+            
+            .actions-container {
+                justify-content: flex-start;
+            }
+        }
+    }
+
+    @media screen and (max-width: 992px) {
+        .p-datatable .p-datatable-header {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            
+            > div {
+                margin-bottom: 0.5rem;
+            }
+            
+            .p-selectbutton {
+                flex-grow: 1;
+            }
+        }
+    }
+
+    // Animation keyframes
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes widthGrow {
+        from {
+            width: 0;
+        }
+        to {
+            width: 120px;
+        }
+    }
+}
+
+.border-dark {
+    border: 1px solid var(--surface-border);
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 800;
+    width: 90%;
+    text-align: center;
+    display: inline-block;
+    color: var(--p-primary-color-text);
+    
+    &.status-pas-transmis {
+        background-color: var(--surface-300);
+    }
+    
+    &.status-commande {
+        background-color: var(--blue-300);
+    }
+    
+    &.status-approbation {
+        background-color: var(--yellow-300);
+    }
+    
+    &.status-livraison {
+        background-color: var(--orange-300);
+    }
+    
+    &.status-livre {
+        background-color: var(--green-300);
+    }
+    
+    &.status-annule {
+        background-color: var(--red-300);
+    }
+}
+
+::ng-deep .tooltip-custom {
+    max-width: 300px;
+    white-space: pre-line;
+    font-size: 14px;
+    padding: 8px;
+}
+
+.p-dialog-title {
+    background: linear-gradient(to right, var(--p-primary-color), var(--p-primary-700));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+:host ::ng-deep {
+    .user-avatar-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+    }
+    
+    .user-avatar-circle i {
+        color: var(--surface-border);
+      font-size: 1.25rem;
+    }
+  }
+
+  .p-card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    transition: all 0.3s;
+  }

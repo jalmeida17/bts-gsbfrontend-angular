@@ -22,10 +22,21 @@ interface MenuChangeEvent {
     routeEvent?: boolean;
 }
 
+/**
+ * LayoutService - Manages PrimeNG theme configuration with localStorage persistence
+ * 
+ * Features:
+ * - Automatically saves theme preferences (dark/light mode, colors, etc.) to localStorage
+ * - Restores theme configuration on page refresh/reload
+ * - Applies dark mode class to document element immediately on load
+ * - Provides methods to clear saved preferences if needed
+ */
 @Injectable({
     providedIn: 'root'
 })
 export class LayoutService {
+    private readonly THEME_STORAGE_KEY = 'layout-config';
+
     _config: layoutConfig = {
         preset: 'Aura',
         primary: 'noir',
@@ -79,6 +90,9 @@ export class LayoutService {
     private initialized = false;
 
     constructor() {
+        // Load saved theme configuration from localStorage
+        this.loadThemeFromStorage();
+
         effect(() => {
             const config = this.layoutConfig();
             if (config) {
@@ -95,6 +109,8 @@ export class LayoutService {
             }
 
             this.handleDarkModeTransition(config);
+            // Save theme configuration whenever it changes
+            this.saveThemeToStorage(config);
         });
     }
 
@@ -161,9 +177,7 @@ export class LayoutService {
 
     isMobile() {
         return !this.isDesktop();
-    }
-
-    onConfigUpdate() {
+    }    onConfigUpdate() {
         this._config = { ...this.layoutConfig() };
         this.configUpdate.next(this.layoutConfig());
     }
@@ -174,5 +188,52 @@ export class LayoutService {
 
     reset() {
         this.resetSource.next(true);
+    }
+
+    /**
+     * Save theme configuration to localStorage
+     */
+    private saveThemeToStorage(config: layoutConfig): void {
+        try {
+            localStorage.setItem(this.THEME_STORAGE_KEY, JSON.stringify(config));
+        } catch (error) {
+            console.warn('Failed to save theme configuration to localStorage:', error);
+        }
+    }
+
+    /**
+     * Load theme configuration from localStorage
+     */
+    private loadThemeFromStorage(): void {
+        try {
+            const savedConfig = localStorage.getItem(this.THEME_STORAGE_KEY);
+            if (savedConfig) {
+                const parsedConfig: layoutConfig = JSON.parse(savedConfig);
+                
+                // Merge saved config with default config to ensure all properties exist
+                this._config = { ...this._config, ...parsedConfig };
+                this.layoutConfig.set(this._config);
+                
+                // Apply the dark theme immediately if it was saved
+                if (this._config.darkTheme) {
+                    document.documentElement.classList.add('app-dark');
+                } else {
+                    document.documentElement.classList.remove('app-dark');
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to load theme configuration from localStorage:', error);
+        }
+    }
+
+    /**
+     * Clear saved theme configuration
+     */
+    clearThemeStorage(): void {
+        try {
+            localStorage.removeItem(this.THEME_STORAGE_KEY);
+        } catch (error) {
+            console.warn('Failed to clear theme configuration from localStorage:', error);
+        }
     }
 }

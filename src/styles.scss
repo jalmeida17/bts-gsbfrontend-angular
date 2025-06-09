@@ -4,7 +4,15 @@
 @use 'primeicons/primeicons.css';
 @use './assets/demo/demo.scss';
 
-.card-glass {
+.p-card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+
+  .card-glass {
+        background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
         border-radius: var(--border-radius);
         transition: all 0.3s ease;

@@ -1,18 +1,21 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
+import { MessageModule } from 'primeng/message';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 import { LayoutService } from '../../layout/service/layout.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
+    imports: [CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, MessageModule],
     template: `
         <app-floating-configurator />
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
@@ -25,14 +28,16 @@ import { LayoutService } from '../../layout/service/layout.service';
                             </div>
                          
                             <span class="text-muted-color font-medium">Sign in to continue</span>
-                        </div>
-
-                        <div>
+                        </div>                        <div>
                             <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
                             <input pInputText id="email1" type="text" placeholder="Email address" class="w-full md:w-[30rem] mb-8" [(ngModel)]="email" />
 
                             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
                             <p-password id="password1" [(ngModel)]="password" placeholder="Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
+
+                            <div *ngIf="errorMessage" class="mb-4">
+                                <p-message severity="error" [text]="errorMessage"></p-message>
+                            </div>
 
                             <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                                 <div class="flex items-center">
@@ -42,7 +47,12 @@ import { LayoutService } from '../../layout/service/layout.service';
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                             </div>
                             <div class="flex flex-row gap-4 justify-center ">
-                                <p-button label="Sign In" styleClass="w-full" routerLink="/dashboard"></p-button>
+                                <p-button 
+                                    label="Sign In" 
+                                    styleClass="w-full" 
+                                    [loading]="isLoading"
+                                    (click)="onLogin()">
+                                </p-button>
                                 <p-button label="Create Account" styleClass="w-full" routerLink="/signup"></p-button>
                             </div>
                         </div>
@@ -54,11 +64,39 @@ import { LayoutService } from '../../layout/service/layout.service';
 })
 export class Login {
 
-    constructor(public layoutService: LayoutService) {}
+    constructor(
+        public layoutService: LayoutService,
+        private authService: AuthService,
+        private router: Router
+    ) {}
 
     email: string = '';
-
     password: string = '';
-
     checked: boolean = false;
+    isLoading: boolean = false;
+    errorMessage: string = '';
+
+    onLogin(): void {
+        if (!this.email || !this.password) {
+            this.errorMessage = 'Please enter both email and password';
+            return;
+        }
+
+        this.isLoading = true;
+        this.errorMessage = '';
+
+        this.authService.login({ email: this.email, password: this.password })
+            .subscribe({
+                next: (response) => {
+                    console.log('Login successful', response);
+                    this.isLoading = false;
+                    this.router.navigate(['/dashboard']);
+                },
+                error: (error) => {
+                    console.error('Login failed', error);
+                    this.isLoading = false;
+                    this.errorMessage = error.error?.message || 'Login failed. Please try again.';
+                }
+            });
+    }
 }

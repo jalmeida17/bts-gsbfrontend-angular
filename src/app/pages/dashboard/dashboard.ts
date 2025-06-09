@@ -9,7 +9,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CalendarModule } from 'primeng/calendar';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -21,13 +21,21 @@ import { TagModule } from 'primeng/tag';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { RippleModule } from 'primeng/ripple';
+import { SelectModule } from 'primeng/select';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { Table } from 'primeng/table';
 import { BillModel } from '../../../models/bill.model';
 import { UserModel } from '../../../models/user.model';
 import { BillService } from '../../../services/bill.service';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { NewBillModalComponent } from './components/newBill.component';
 
 @Component({
     selector: 'app-dashboard',
-    standalone: true,    imports: [
+    standalone: true,
+    imports: [
         CommonModule,
         TableModule,
         ButtonModule,
@@ -48,142 +56,54 @@ import { BillService } from '../../../services/bill.service';
         TagModule,
         AvatarModule,
         BadgeModule,
-        RippleModule
+        RippleModule,
+        SelectModule,
+        IconFieldModule,
+        InputIconModule,
+        ConfirmPopupModule,
+        NewBillModalComponent
     ],
-    providers: [MessageService],
+    providers: [MessageService, ConfirmationService],
     templateUrl: './dashboard.html',
-    styles: [`
-        .dashboard-container {
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .header-section {
-            margin-bottom: 2rem;
-        }
-        
-        .logo-title {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .logo-container {
-            background-color: var(--primary-color);
-            color: white;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        
-        .title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-color);
-            margin: 0;
-            text-align: center;
-            letter-spacing: 1px;
-        }
-        
-        .stats-card {
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s;
-            height: 100%;
-        }
-        
-        .stats-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-label {
-            color: var(--text-color-secondary);
-            font-size: 0.875rem;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-color);
-            margin: 0;
-        }
-        
-        .icon-background {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-        
-        .document-bg {
-            background-color: var(--primary-color);
-        }
-        
-        .money-bg {
-            background-color: var(--green-500);
-        }
-        
-        .alert-bg {
-            background-color: var(--orange-500);
-        }
-        
-        .card-glass {
- 
-            backdrop-filter: blur(10px);
-            border-radius: 8px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-            padding: 0.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .bill-dialog .p-dialog-content {
-            padding: 2rem 1.5rem 1rem 1.5rem;
-        }
-        
-        :host ::ng-deep {
-            .p-datatable .p-datatable-thead > tr > th {
-                background-color: var(--surface-ground);
-                color: var(--text-color);
-                font-weight: 600;
-                padding: 0.75rem 1rem;
-            }
-            
-            .p-datatable .p-datatable-tbody > tr > td {
-                padding: 0.75rem 1rem;
-            }
-            
-            .p-dropdown {
-                width: 100%;
-            }
-            
-            .p-toolbar {
-                background: transparent;
-                border: none;
-                padding: 1rem 0;
-            }
-        }
-    `]
+    styleUrl: './dashboard.scss',
+    animations: [
+        trigger('slideIn', [
+            transition(':enter', [
+                style({ 
+                    transform: 'translateX(2%)',
+                    opacity: 0,
+                    filter: 'blur(2px)'
+                }),
+                animate('600ms cubic-bezier(0.4, 0, 0.2, 1)', style({ 
+                    transform: 'translateX(0)',
+                    opacity: 1,
+                    filter: 'blur(0)'
+                }))
+            ])
+        ]),
+        trigger('fadeInScale', [
+            transition(':enter', [
+                style({ 
+                    transform: 'scale(0.95)',
+                    opacity: 0
+                }),
+                animate('600ms cubic-bezier(0.4, 0, 0.2, 1)', style({ 
+                    transform: 'scale(1)',
+                    opacity: 1
+                }))
+            ])
+        ])
+    ]
 })
 export class Dashboard implements OnInit {
     bills: BillModel[] = [];
-    billDialogVisible = false;
-    bill: any = {};
+    newBillModalVisible = false;
+    loading = false;
+    searchValue: string | undefined;
+    
+    // Filter values for column filters
+    selectedStatus: string | null = null;
+    
     statusOptions = [
         { label: 'Approved', value: 'approved' },
         { label: 'Pending', value: 'pending' },
@@ -192,7 +112,8 @@ export class Dashboard implements OnInit {
 
     constructor(
         private messageService: MessageService,
-        private billService: BillService
+        private billService: BillService,
+        private confirmationService: ConfirmationService
     ) {}
     
     ngOnInit() {
@@ -200,140 +121,132 @@ export class Dashboard implements OnInit {
     }
     
     loadBills() {
+        this.loading = true;
         this.billService.getAllBills().subscribe({
             next: (data) => {
-                this.bills = data;
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Bills loaded', life: 3000 });
+
+                this.bills = data.map(bill => ({
+                    ...bill,
+                    date: new Date(bill.date),
+                }));
+                this.loading = false;
+                console.log('Bills loaded successfully', this.bills);
             },
             error: (error) => {
                 console.error('Error loading bills', error);
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load bills', life: 3000 });
+                this.messageService.add({ 
+                    severity: 'error', 
+                    summary: 'Error', 
+                    detail: 'Failed to load bills', 
+                    life: 3000 
+                });
+                this.loading = false;
             }
         });
     }
-      getTotalAmount(): number {
-        return this.bills.reduce((total, bill) => total + (bill.amount || 0), 0);
+    
+    clear(table: Table) {
+        table.clear();
+        this.searchValue = '';
+        this.selectedStatus = null;
     }
     
-    getUnpaidBillsCount(): number {
-        return this.bills.filter(bill => bill.status === 'pending').length;
-    }
-
-    
-    getInitials(name: string): string {
-        if (!name) return '';
-        return name.split(' ').map(n => n[0]).join('').toUpperCase();
+    onGlobalFilter(table: Table, event: Event) {
+        const target = event.target as HTMLInputElement;
+        table.filterGlobal(target.value, 'contains');
     }
     
-    getAvatarColor(name: string): string {
-        if (!name) return '#757575';
-        const colors = ['#1976D2', '#9C27B0', '#E91E63', '#FF9800', '#009688', '#673AB7'];
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        hash = Math.abs(hash);
-        return colors[hash % colors.length];
+    onStatusFilter(filterCallback: Function, value: string) {
+        this.selectedStatus = value;
+        filterCallback(value);
     }
     
-    getStatusSeverity(status: string): string {
-        switch (status) {
-            case 'paid':
+    getStatusSeverity(status: string) {
+        switch (status?.toLowerCase()) {
+            case 'approved':
                 return 'success';
             case 'pending':
-                return 'warning';
-            case 'cancelled':
+                return 'warn';
+            case 'rejected':
                 return 'danger';
             default:
                 return 'info';
         }
     }
-    
-    onFilter(event: any) {
-        const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
-        // Implement filtering if needed
-    }
-    
-    openNewBillDialog() {
-        this.bill = {};
-        this.billDialogVisible = true;
-    }
-    
+
     editBill(bill: BillModel) {
-        this.bill = { ...bill };
-        this.billDialogVisible = true;
-    }
-      selectedProofFile: File | null = null;
-
-    onFileSelect(event: any) {
-        if (event.target.files.length > 0) {
-            this.selectedProofFile = event.target.files[0];
-        }
+        // For now, just show a message that edit is not implemented yet
+        this.messageService.add({ 
+            severity: 'info', 
+            summary: 'Info', 
+            detail: 'Edit functionality will be implemented soon', 
+            life: 3000 
+        });
     }
 
-    saveBill() {
-        if (this.bill.id) {
-            // Update existing bill
-            this.billService.updateBill(this.bill.id, this.bill).subscribe({
-                next: (updatedBill) => {
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Bill updated', life: 3000 });
-                    this.loadBills();
-                    this.billDialogVisible = false;
-                },
-                error: (error) => {
-                    console.error('Error updating bill', error);
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update bill', life: 3000 });
-                }
-            });
-        } else {
-            // Create new bill with file upload
-            if (!this.selectedProofFile) {
+    openNewBillModal() {
+        this.newBillModalVisible = true;
+    }
+
+    onBillSaved(event: { bill: any, file: File }) {
+        this.billService.createBill(event.bill, event.file).subscribe({
+            next: (createdBill) => {
                 this.messageService.add({ 
-                    severity: 'warn', 
-                    summary: 'Warning', 
-                    detail: 'Please upload a proof document', 
+                    severity: 'success', 
+                    summary: 'Success', 
+                    detail: 'Bill created successfully', 
                     life: 3000 
                 });
-                return;
+                this.loadBills();
+            },
+            error: (error) => {
+                console.error('Error creating bill', error);
+                this.messageService.add({ 
+                    severity: 'error', 
+                    summary: 'Error', 
+                    detail: 'Failed to create bill: ' + (error.message || 'Unknown error'), 
+                    life: 5000 
+                });
             }
-
-            this.billService.createBill(this.bill, this.selectedProofFile).subscribe({
-                next: (createdBill) => {
-                    this.messageService.add({ 
-                        severity: 'success', 
-                        summary: 'Success', 
-                        detail: 'Bill created successfully', 
-                        life: 3000 
-                    });
-                    this.loadBills();
-                    this.billDialogVisible = false;
-                    this.selectedProofFile = null;
-                },
-                error: (error) => {
-                    console.error('Error creating bill', error);
-                    this.messageService.add({ 
-                        severity: 'error', 
-                        summary: 'Error', 
-                        detail: 'Failed to create bill: ' + (error.message || 'Unknown error'), 
-                        life: 5000 
-                    });
-                }
-            });
-        }
+        });
     }
-    
-    confirmDelete(bill: BillModel) {
-        if (confirm('Are you sure you want to delete this bill?')) {
-            this.billService.deleteBill(bill._id).subscribe({
-                next: () => {
-                    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Bill deleted', life: 3000 });
-                    this.loadBills();
-                },
-                error: (error) => {
-                    console.error('Error deleting bill', error);
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete bill', life: 3000 });
-                }
-            });
-        }
+
+    confirmDelete(event: Event, bill: BillModel) {
+        this.confirmationService.confirm({
+            target: event.currentTarget as EventTarget,
+            message: 'Are you sure you want to delete this bill?',
+            icon: 'pi pi-exclamation-triangle',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptButtonProps: {
+                label: 'Delete',
+                severity: 'danger'
+            },
+            accept: () => {
+                this.billService.deleteBill(bill._id).subscribe({
+                    next: () => {
+                        this.messageService.add({ 
+                            severity: 'success', 
+                            summary: 'Success', 
+                            detail: 'Bill deleted successfully', 
+                            life: 3000 
+                        });
+                        this.loadBills();
+                    },
+                    error: (error) => {
+                        console.error('Error deleting bill', error);
+                        this.messageService.add({ 
+                            severity: 'error', 
+                            summary: 'Error', 
+                            detail: 'Failed to delete bill', 
+                            life: 3000 
+                        });
+                    }
+                });
+            },
+        });
     }
 }

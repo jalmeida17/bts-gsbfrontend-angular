@@ -1,79 +1,78 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
+import { AuthService } from '../../../services/auth.service';
+import { UserService } from '../../../services/user.service';
+import { UserModel } from '../../../models/user.model';
+import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-topbar',
     standalone: true,
     imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator],
     styleUrls: ['./app.topbar.scss'],
-    template: ` <div class="layout-topbar">
-    
-        <div class="layout-topbar-logo-container" style="gap: 5px;">
-            <img src="assets/{{layoutService.isDarkTheme() ? 'gsb_dark' : 'gsb_light'}}.png" alt="logo" style="width: 50px; height: auto;">
-            <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
-                <i class="pi pi-bars"></i>
-            </button>
-        </div>
-
-        <div class="layout-topbar-actions">
-            <div class="layout-config-menu -mr-5">
-                <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
-                    <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
-                </button>
-                <div class="relative">
-
-                    <app-configurator />
-                </div>
-            </div>
-
-            <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
-                <i class="pi pi-ellipsis-v"></i>
-            </button>
-
-            <div class="layout-topbar-menu hidden lg:block">
-                <div class="layout-topbar-menu-content">
-                    <div class="user-profile-container">
-                        <button type="button" class="layout-topbar-action" routerLink="/profile">
-                            <i class="pi pi-user"></i>
-                            <span>Profile</span>
-                        </button>
-                        <div class="user-profile-dropdown">
-                            <div class="inside-user-profile">
-                                <div class="user-profile-header">
-                                    <i class="pi pi-user"></i>
-                                    <span>Joao Miguel Almeida Santos</span>
-                                </div>
-                                <div class="user-profile-email">
-                                    <span>{{"joa.almeidasantos@gmail.com"}}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button>
-                    
-                </div>
-            </div>
-        </div>
-    </div>`
+    templateUrl: './app.topbar.html',
 })
-export class AppTopbar {
+export class AppTopbar implements OnInit {
     items!: MenuItem[];
+    currentUser: UserModel | null = null;
+    activeLanguage: any;    
 
-    constructor(public layoutService: LayoutService) {}
+    availableLanguages = [
+        { label: 'English', value: 'en' },
+        { label: 'Français', value: 'fr' },
+        { label: 'Italiano', value: 'it' },
+        { label: 'Español', value: 'es' },
+        { label: 'Português', value: 'pt' },
+        { label: 'Deutsch', value: 'de' },
+        { label: 'Русский', value: 'ru' }
+    ]
 
-    toggleDarkMode() {
+    constructor(
+        public layoutService: LayoutService,
+        private authService: AuthService,
+        private userService: UserService,
+        private router: Router,
+        public readonly translocoService: TranslocoService
+    ) {}    ngOnInit() {
+        // Initialize active language after service is available
+        this.activeLanguage = this.getActiveLanguage();
+        
+        if (this.authService.isAuthenticated()) {
+            this.userService.getCurrentUser().subscribe({
+                next: (user) => {
+                    this.currentUser = user;
+                },
+                error: (error) => {
+                    console.error('Error fetching user profile:', error);
+                }
+            });
+        }
+    }toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        localStorage.setItem('lang', 'en');
+    }
+
+    getCapitalizedName(): string {
+        if (!this.currentUser?.name) {
+            return 'Loading...';
+        }
+        return this.currentUser.name.charAt(0).toUpperCase() + this.currentUser.name.slice(1);
+    }    logout() {
+        this.authService.logout();
+        this.router.navigate(['/']);
+    }
+
+    selectLanguage(lang: string) {
+        this.activeLanguage = this.availableLanguages.find(l => l.value === lang);
+        this.translocoService.setActiveLang(lang);
+    }
+
+    getActiveLanguage() {
+        return this.availableLanguages.find(lang => lang.value === this.translocoService.getActiveLang());
     }
 }

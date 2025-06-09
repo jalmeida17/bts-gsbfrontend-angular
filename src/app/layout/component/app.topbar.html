@@ -1,0 +1,89 @@
+<div class="layout-topbar">
+    <div class="layout-topbar-logo-container" style="gap: 5px;">
+        <img src="assets/{{layoutService.isDarkTheme() ? 'gsb_dark' : 'gsb_light'}}.png" alt="logo" style="width: 50px; height: auto;">
+        <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+            <i class="pi pi-bars"></i>
+        </button>
+    </div>
+
+    <div class="layout-topbar-actions">
+        <div class="layout-config-menu -mr-5">
+            <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
+                <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
+            </button>
+            <div class="relative">
+
+                <app-configurator />
+            </div>
+        </div>
+
+        <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
+            <i class="pi pi-ellipsis-v"></i>
+        </button>
+
+        <div class="layout-topbar-menu hidden lg:block">
+            <div class="layout-topbar-menu-content">
+                <div class="user-profile-container">
+                    <button type="button" class="layout-topbar-action">
+                        <i class="pi pi-user"></i>
+                        <span>Profile</span>
+                    </button>
+                    <div class="user-profile-dropdown">                            <div class="inside-user-profile">                                <div class="user-profile-header">
+                                <i class="pi pi-user"></i>
+                                <span>{{getCapitalizedName()}}</span>
+                            </div>
+                            <div class="user-profile-email">
+                                <span>{{currentUser?.email || ''}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>                   
+                <button type="button" class="layout-topbar-action" (click)="logout()">
+                    <i class="pi pi-sign-out"></i>
+                    <span>Logout</span>
+                </button>
+                
+            </div>
+        </div>
+    </div>
+
+    <div #topbarmenu class="layout-topbar-menu hidden lg:block" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService._state.configSidebarVisible}">
+        <div class="top-nav-right-language">
+            <img src="assets/img/flags/{{activeLanguage?.value}}.svg">
+            <span>{{activeLanguage?.label}}</span>
+
+            <div class="modal-culture-selection">
+                <div class="inside-modal-culture">
+                    <div class="language-choice" (click)="selectLanguage('en')">
+                        <img src="assets/img/flags/en.svg">
+                        <span>English</span>
+                    </div>
+                    <div class="language-choice" (click)="selectLanguage('fr')">
+                        <img src="assets/img/flags/fr.svg">
+                        <span>Français</span>
+                    </div>
+                    <div class="language-choice" (click)="selectLanguage('es')">
+                        <img src="assets/img/flags/es.svg">
+                        <span>Español</span>
+                    </div>
+                    <div class="language-choice" (click)="selectLanguage('it')">
+                        <img src="assets/img/flags/it.svg">
+                        <span>Italiano</span>
+                    </div>
+                    <div class="language-choice" (click)="selectLanguage('pt')">
+                        <img src="assets/img/flags/pt.svg">
+                        <span>Português</span>
+                    </div>
+                    <div class="language-choice" (click)="selectLanguage('de')">
+                        <img src="assets/img/flags/de.svg">
+                        <span>Deutsch</span>
+                    </div>
+                    <div class="language-choice" (click)="selectLanguage('ru')">
+                        <img src="assets/img/flags/ru.svg">
+                        <span>Русский</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,168 +1,148 @@
-<div class="dashboard-container">
-            <p-toast position="top-right"></p-toast>
+<p-confirmPopup></p-confirmPopup>
+<p-toast></p-toast>
+<div [@slideIn]="'right'" class="card">
 
-            <!-- Table Toolbar -->
-            <p-toolbar styleClass="mb-4">
-                <ng-template pTemplate="left">
-                    <h2 class="m-0 font-semibold">Your Bills</h2>
-                </ng-template>
-                <ng-template pTemplate="right">
-                    <p-button icon="pi pi-plus" label="New Bill" 
-                            styleClass="p-button-primary mr-2" (click)="openNewBillDialog()"></p-button>
-                    <p-button icon="pi pi-filter" label="Filter" 
-                            styleClass="p-button-outlined p-button-secondary"></p-button>
-                </ng-template>
-            </p-toolbar>
-            
-            <!-- Data Table -->
-            <div class="card-glass">
-                <p-table #dt [value]="bills" [tableStyle]="{ 'min-width': '60rem' }"
-                        [rowHover]="true"
-                        [rows]="10" [paginator]="true" [rowsPerPageOptions]="[5, 10, 25]"
-                        [globalFilterFields]="['user','description','status','category']"
-                        styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
-                        [scrollable]="true">
-                    <ng-template pTemplate="caption">
-                        <div class="flex justify-between items-center">                            <span class="p-input-icon-left">
-                                <i class="pi pi-search mr-2"></i>
-                                <input pInputText type="text" placeholder="Search..." 
-                                    (input)="onFilter($event)" />
-                            </span>
-                        </div>
-                    </ng-template>
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th pSortableColumn="id" style="width:5%">ID <p-sortIcon field="id"></p-sortIcon></th>
-                            <th pSortableColumn="date" style="width:15%">Date <p-sortIcon field="date"></p-sortIcon></th>
-                            <th pSortableColumn="type" style="width:15%">Type <p-sortIcon field="type"></p-sortIcon></th>
-                            <th pSortableColumn="price" style="width:12%">Amount <p-sortIcon field="price"></p-sortIcon></th> 
-                            <th pSortableColumn="status" style="width:15%">Status <p-sortIcon field="status"></p-sortIcon></th>
-                            <th style="width:10%">Actions</th>
-                        </tr>
-                    </ng-template>                    <ng-template pTemplate="body" let-bill>
-                        <tr>
-                            <td>
-                                <strong>{{ bill._id }}</strong>
-                            </td>
-                            <td>
-                                {{ bill.date | date:'dd/MM/yyyy' }}
-                            </td>
-                            <td>
-                                <strong>{{ bill.type }}</strong>
-                            </td>
-                            <td>
-                                <span class="text-bold">{{ (bill.price || bill.amount) | currency:'EUR' }}</span>
-                            </td>
-                            <td>
-                                <p-tag [value]="bill.status" [severity]="getStatusSeverity(bill.status)"></p-tag>
-                            </td>
-                            <td>
-                                <div class="flex gap-2">
-                                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text p-button-raised p-button-info"
-                                            (click)="editBill(bill)" pTooltip="Edit"></button>
-                                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-raised p-button-danger"
-                                            (click)="confirmDelete(bill)" pTooltip="Delete"></button>
-                                </div>
-                            </td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="7" class="text-center p-4">No bills found.</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
-              <p-dialog [(visible)]="billDialogVisible" [style]="{ width: '500px' }" 
-                     [header]="bill.id ? 'Edit Bill' : 'New Bill'" [modal]="true" 
-                     styleClass="p-fluid bill-dialog" [draggable]="false" [resizable]="false">
-                <ng-template pTemplate="content">
-                    <div class="form-grid grid">
-                        <div class="col-12 mb-3">
-                            <div class="field">
-                                <label for="user" class="font-semibold block mb-2">Client</label>
-                                <span class="p-input-icon-left w-full">
-                                    <i class="pi pi-user"></i>
-                                    <input type="text" pInputText id="user" [(ngModel)]="bill.user" required class="w-full" />
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12 md:col-6 mb-3">
-                            <div class="field">
-                                <label for="price" class="font-semibold block mb-2">Montant</label>
-                                <span class="p-input-icon-left w-full">
-                                    <i class="pi pi-euro"></i>
-                                    <p-inputNumber id="price" [(ngModel)]="bill.price" mode="currency" currency="EUR" 
-                                                locale="fr-FR" class="w-full"></p-inputNumber>
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12 md:col-6 mb-3">
-                            <div class="field">
-                                <label for="status" class="font-semibold block mb-2">Statut</label>
-                                <p-dropdown id="status" [options]="statusOptions" optionLabel="label" optionValue="value"
-                                            [(ngModel)]="bill.status" placeholder="Sélectionner un statut" class="w-full"></p-dropdown>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12 md:col-6 mb-3">
-                            <div class="field">
-                                <label for="date" class="font-semibold block mb-2">Date d'émission</label>
-                                <p-calendar id="date" [(ngModel)]="bill.date" dateFormat="dd/mm/yy" 
-                                            showIcon="true" class="w-full" [showButtonBar]="true"></p-calendar>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12 md:col-6 mb-3">
-                            <div class="field">
-                                <label for="dueDate" class="font-semibold block mb-2">Date d'échéance</label>
-                                <p-calendar id="dueDate" [(ngModel)]="bill.dueDate" dateFormat="dd/mm/yy" 
-                                            showIcon="true" class="w-full" [showButtonBar]="true"></p-calendar>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12 md:col-6 mb-3">
-                            <div class="field">
-                                <label for="category" class="font-semibold block mb-2">Catégorie</label>
-                                <p-dropdown id="category" optionLabel="label" optionValue="value"
-                                            [(ngModel)]="bill.category" placeholder="Sélectionner une catégorie" class="w-full"></p-dropdown>
-                            </div>
-                        </div>
-                        
-                        <div class="col-12 md:col-6 mb-3">
-                            <div class="field">
-                                <label for="priority" class="font-semibold block mb-2">Priorité</label>
-                                <p-dropdown id="priority" optionLabel="label" optionValue="value"
-                                            [(ngModel)]="bill.priority" placeholder="Sélectionner une priorité" class="w-full"></p-dropdown>
-                            </div>
-                        </div>
-                          <div class="col-12 mb-3">
-                            <div class="field">
-                                <label for="description" class="font-semibold block mb-2">Description</label>
-                                <p-textarea id="description" [(ngModel)]="bill.description" rows="3" 
-                                            autoResize="true" class="w-full"></p-textarea>
-                            </div>
-                        </div>
-                        
-                        <!-- File upload field - only show for new bills -->
-                        <div class="col-12 mb-3" *ngIf="!bill.id">
-                            <div class="field">
-                                <label for="proofFile" class="font-semibold block mb-2">Proof Document (Required)</label>
-                                <input type="file" id="proofFile" (change)="onFileSelect($event)" class="w-full p-2 border-1 border-round" />
-                            </div>
-                        </div>
-                    </div>
-                </ng-template>
-                
-                <ng-template pTemplate="footer">
-                    <div class="flex justify-content-end gap-2">
-                        <p-button label="Annuler" icon="pi pi-times" styleClass="p-button-text p-button-secondary" 
-                                (click)="billDialogVisible = false"></p-button>
-                        <p-button label="Enregistrer" icon="pi pi-check" styleClass="p-button-primary" 
-                                (click)="saveBill()"></p-button>
-                    </div>
-                </ng-template>
-            </p-dialog>
+    <div class="flex flex-col items-center justify-center mb-8">
+        <div class="text-center">
+            <h1 class="title-text m-0 text-3xl font-bold">YOUR BILLS</h1>
+            <div class="title-underline" style="margin-top: 1rem;"></div>
         </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 mb-6">
+        <div class="lg:col-span-3">
+            <p-button icon="pi pi-plus" 
+                     label="New Bill"
+                     styleClass="p-button-primary w-full transform transition-transform hover:scale-105"
+                     (click)="openNewBillModal()">
+            </p-button>
+        </div>
+    </div>
+
+    <app-new-bill-modal
+        [(visible)]="newBillModalVisible"
+        (billSaved)="onBillSaved($event)">
+    </app-new-bill-modal>
+    
+    <!-- Data Table with Advanced Filtering -->
+    <div class="p-card">
+        <p-table #dt [value]="bills" dataKey="_id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" 
+                [loading]="loading" [paginator]="true" 
+                [globalFilterFields]="['user', 'type', 'description', 'status']"
+                styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
+                [scrollable]="true">
+            
+            <ng-template pTemplate="caption">
+                <div class="flex flex-column md:flex-row md:align-items-center gap-3">
+                    <div class="search-container flex-grow-1">
+                        <p-iconField iconPosition="left" styleClass="w-full">
+                            <p-inputIcon>
+                                <i class="pi pi-search"></i>
+                            </p-inputIcon>
+                            <input pInputText type="text" class="w-full" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+                        </p-iconField>
+                    </div>
+                    
+                    <div class="actions-container flex gap-2 md:justify-content-end">
+                        <p-button [outlined]="true" icon="pi pi-filter-slash" 
+                                 label="Clear Filters" 
+                                 (click)="clear(dt)" />
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template #header>
+                <tr>
+                    <th style="min-width:8rem">
+                        <div class="flex items-center">
+                            ID
+                            <p-columnFilter type="text" field="_id" display="menu" />
+                        </div>
+                    </th>
+                    <th style="min-width:12rem">
+                        <div class="flex items-center">
+                            Client
+                            <p-columnFilter type="text" field="user" display="menu" />
+                        </div>
+                    </th>
+                    <th style="min-width:10rem">
+                        <div class="flex items-center">
+                            Type
+                            <p-columnFilter type="text" field="type" display="menu" />
+                        </div>
+                    </th>
+                    <th style="min-width:10rem">
+                        <div class="flex items-center">
+                            Amount
+                            <p-columnFilter type="numeric" field="price" display="menu" currency="EUR" />
+                        </div>
+                    </th>
+                    <th style="min-width:10rem">
+                        <div class="flex items-center">
+                            Date
+                            <p-columnFilter type="date" field="date" display="menu" />
+                        </div>
+                    </th>
+                    <th style="min-width:10rem">
+                        <div class="flex items-center">
+                            Status
+                            <p-columnFilter field="status" matchMode="equals" display="menu">
+                                <ng-template #filter let-value let-filter="filterCallback">
+                                    <p-select [(ngModel)]="selectedStatus" [options]="statusOptions" 
+                                             (onChange)="onStatusFilter(filter, $event.value)" placeholder="Select Status" 
+                                             styleClass="w-full" optionLabel="label" optionValue="value">
+                                        <ng-template let-option #item>
+                                            <p-tag [value]="option.label" [severity]="getStatusSeverity(option.value)"></p-tag>
+                                        </ng-template>
+                                    </p-select>
+                                </ng-template>
+                            </p-columnFilter>
+                        </div>
+                    </th>
+                    <th style="width: 8rem">Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template #body let-bill>
+                <tr>
+                    <td>
+                        <strong>{{ bill._id.slice(-6) }}</strong>
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-user text-primary"></i>
+                            <span>{{ bill.user }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <strong>{{ bill.type }}</strong>
+                    </td>
+                    <td>
+                        <span class="text-bold">{{ (bill.price || bill.amount) | currency:'EUR' }}</span>
+                    </td>
+                    <td>
+                        {{ bill.date | date:'dd/MM/yyyy' }}
+                    </td>
+                    <td>
+                        <p-tag [value]="bill.status" [severity]="getStatusSeverity(bill.status)"></p-tag>
+                    </td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button pButton pRipple icon="pi pi-pencil" 
+                                    class="p-button-rounded p-button-text"
+                                    (click)="editBill(bill)" pTooltip="Edit"></button>
+                            <button pButton pRipple icon="pi pi-trash" 
+                                    class="p-button-rounded p-button-text"
+                                    (click)="confirmDelete($event, bill)" pTooltip="Delete"></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="9" class="text-center p-4">No bills found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
