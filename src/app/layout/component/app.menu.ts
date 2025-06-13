@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { AuthService } from '../../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-menu',
@@ -15,21 +17,35 @@ import { AppMenuitem } from './app.menuitem';
         </ng-container>
     </ul> `
 })
-export class AppMenu {
+export class AppMenu implements OnDestroy {
     model: MenuItem[] = [];
+    private userSubscription: Subscription = new Subscription();
 
-    ngOnInit() {
+    constructor(private authService: AuthService) {}    ngOnInit() {
+        this.buildMenu();
+        
+        // Subscribe to user changes to update menu dynamically
+        this.userSubscription = this.authService.currentUser$.subscribe(user => {
+            this.buildMenu();
+        });
+    }
+
+    ngOnDestroy() {
+        this.userSubscription.unsubscribe();
+    }
+
+    private buildMenu() {
         this.model = [
             {
                 label: 'Accueil',
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] }]
             },
-            {
+            ...(this.authService.isAdmin() ? [{
                 label: 'Admin',
                 items: [
-                    { label: 'Bill Manager', icon: 'pi pi-fw pi-id-card', routerLink: ['/formlayout'] },
+                    { label: 'Bill Manager', icon: 'pi pi-fw pi-id-card', routerLink: ['/admin'] },
                 ]
-            },
+            }] : []),
             // {
             //     label: 'Pages',
             //     icon: 'pi pi-fw pi-briefcase',

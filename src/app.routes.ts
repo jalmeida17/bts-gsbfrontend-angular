@@ -5,6 +5,7 @@ import { Notfound } from './app/pages/notfound/notfound';
 import { Login } from './app/pages/auth/login';
 import { Signup } from './app/pages/auth/signup';
 import { AuthGuard } from './guards/auth.guard';
+import { AdminDashboard } from './app/pages/admin-dashboard/admin-dashboard';
 
 export const appRoutes: Routes = [
     { path: '', component: Login },
@@ -15,6 +16,7 @@ export const appRoutes: Routes = [
         canActivate: [AuthGuard],
         children: [
             { path: 'dashboard', component: Dashboard },
+            { path: 'admin', component: AdminDashboard },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },

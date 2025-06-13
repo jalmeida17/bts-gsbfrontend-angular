@@ -22,9 +22,8 @@
         </button>
 
         <div class="layout-topbar-menu hidden lg:block">
-            <div class="layout-topbar-menu-content">
-                <div class="user-profile-container">
-                    <button type="button" class="layout-topbar-action">
+            <div class="layout-topbar-menu-content">                <div class="user-profile-container">
+                    <button type="button" class="layout-topbar-action" (click)="showProfileDialog()">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
                     </button>
@@ -82,8 +81,54 @@
                         <img src="assets/img/flags/ru.svg">
                         <span>Русский</span>
                     </div>
-                </div>
-            </div>
+                </div>            </div>
         </div>
     </div>
 </div>
+
+<!-- Profile Dialog -->
+<p-dialog 
+    [(visible)]="profileDialogVisible" 
+    [modal]="true" 
+    [closable]="true"
+    [draggable]="false"
+    [resizable]="false"
+    styleClass="profile-dialog"
+    [style]="{width: '400px'}"
+    header=" ">
+    
+    <div class="profile-modal-content">
+        <!-- Profile Banner -->
+        <div class="profile-banner">
+            <div class="profile-avatar">
+                <span class="avatar-letter">{{getUserInitials()}}</span>
+            </div>
+        </div>
+        
+        <!-- Profile Information -->
+        <div class="profile-info -mb-10 -mt-5">
+            <h3 class="profile-name">{{getCapitalizedName()}}</h3>
+            
+            <div class="profile-details">
+                <div class="profile-field">
+                    <label class="field-label">
+                        <i class="pi pi-envelope"></i>
+                        Email
+                    </label>
+                    <span class="field-value">{{currentUser?.email}}</span>
+                </div>
+                
+                <div class="profile-field">
+                    <label class="field-label">
+                        <i class="pi pi-users"></i>
+                        Role
+                    </label>
+                    <span class="field-value">{{currentUser?.role}}</span>
+                </div>
+                
+            </div>
+            
+
+        </div>
+    </div>
+</p-dialog>

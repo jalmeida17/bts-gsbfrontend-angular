@@ -18,6 +18,7 @@ import { AuthService } from '../../../services/auth.service';
     imports: [CommonModule, ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, MessageModule],
     template: `
         <app-floating-configurator />
+        
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
             <div class="flex flex-col items-center justify-center">
                 <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
@@ -44,7 +45,7 @@ import { AuthService } from '../../../services/auth.service';
                                     <p-checkbox [(ngModel)]="checked" id="rememberme1" binary class="mr-2"></p-checkbox>
                                     <label for="rememberme1">Remember me</label>
                                 </div>
-                                <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
+                               
                             </div>
                             <div class="flex flex-row gap-4 justify-center ">
                                 <p-button 

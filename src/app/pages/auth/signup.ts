@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -8,13 +8,17 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 import { LayoutService } from '../../layout/service/layout.service';
+import { AuthService, SignupRequest } from '../../../services/auth.service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-signup',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
-    template: `
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, ToastModule],
+    providers: [MessageService],    template: `
         <app-floating-configurator />
+        <p-toast></p-toast>
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
             <div class="flex flex-col items-center justify-center">
                 <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
@@ -40,9 +44,7 @@ import { LayoutService } from '../../layout/service/layout.service';
                             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
                             <p-password id="password1" [(ngModel)]="password" placeholder="Password"  [toggleMask]="true" styleClass="w-full md:w-[30rem] mb-8 -mr-5" [fluid]="true" [feedback]="false"></p-password>
 
-
-
-                            <p-button label="Create Account" styleClass="w-full mt-4" routerLink="/dashboard"></p-button>
+                            <p-button label="Create Account" styleClass="w-full mt-4" [loading]="isLoading" (onClick)="onSignup()"></p-button>
                         </div>
                     </div>
                 </div>
@@ -52,15 +54,118 @@ import { LayoutService } from '../../layout/service/layout.service';
 })
 export class Signup {
 
-    constructor(public layoutService: LayoutService) {}
+    constructor(
+        public layoutService: LayoutService,
+        private authService: AuthService,
+        private router: Router,
+        private messageService: MessageService
+    ) {}
 
     email: string = '';
-
     password: string = '';
-
     username: string = '';
-
     phonenum: string = '';
-
     checked: boolean = false;
+    isLoading: boolean = false;
+
+    onSignup(): void {
+        if (!this.validateForm()) {
+            return;
+        }
+
+        this.isLoading = true;
+
+        const signupRequest: SignupRequest = {
+            name: this.username,
+            email: this.email,
+            password: this.password,
+            role: 'user' // Default role for new users
+        };
+
+        this.authService.signup(signupRequest).subscribe({
+            next: (response) => {
+                this.isLoading = false;
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Account created successfully! Please login to continue.'
+                });
+                
+                // Redirect to login page after successful signup
+                setTimeout(() => {
+                    this.router.navigate(['/auth/login']);
+                }, 2000);
+            },
+            error: (error) => {
+                this.isLoading = false;
+                let errorMessage = 'Failed to create account. Please try again.';
+                
+                if (error.error?.message) {
+                    errorMessage = error.error.message;
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: errorMessage
+                });
+            }
+        });
+    }
+
+    private validateForm(): boolean {
+        if (!this.username.trim()) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Please enter your name'
+            });
+            return false;
+        }
+
+        if (!this.email.trim()) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Please enter your email'
+            });
+            return false;
+        }
+
+        if (!this.isValidEmail(this.email)) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Please enter a valid email address'
+            });
+            return false;
+        }
+
+        if (!this.password.trim()) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Please enter a password'
+            });
+            return false;
+        }
+
+        if (this.password.length < 6) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Warning',
+                detail: 'Password must be at least 6 characters long'
+            });
+            return false;
+        }
+
+        return true;
+    }
+
+    private isValidEmail(email: string): boolean {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
 }

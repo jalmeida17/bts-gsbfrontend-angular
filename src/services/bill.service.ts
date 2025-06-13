@@ -34,9 +34,24 @@ export class BillService {
     
     return this.http.post<BillModel>(this.apiUrl, formData);
   }
-
   updateBill(id: string, bill: Partial<BillModel>): Observable<BillModel> {
     return this.http.put<BillModel>(`${this.apiUrl}/${id}`, bill);
+  }
+
+  updateBillWithFile(id: string, bill: Partial<BillModel>, proofFile: File): Observable<BillModel> {
+    const formData = new FormData();
+    const metadata = JSON.stringify({
+      date: bill.date,
+      amount: bill.amount,
+      description: bill.description,
+      status: bill.status,
+      type: bill.type
+    });
+    
+    formData.append('metadata', metadata);
+    formData.append('proof', proofFile);
+    
+    return this.http.put<BillModel>(`${this.apiUrl}/${id}`, formData);
   }
 
   deleteBill(id: string): Observable<{ message: string }> {

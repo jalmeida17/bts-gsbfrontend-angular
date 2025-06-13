@@ -1,38 +1,61 @@
 <p-confirmPopup></p-confirmPopup>
 <p-toast></p-toast>
-<div [@slideIn]="'right'" class="card">
-
-    <div class="flex flex-col items-center justify-center mb-8">
+<div [@slideIn]="'right'" class="card">    <div class="flex flex-col items-center justify-center mb-8">
         <div class="text-center">
-            <h1 class="title-text m-0 text-3xl font-bold">YOUR BILLS</h1>
+            <h1 class="title-text m-0 text-3xl font-bold">ADMIN DASHBOARD</h1>
             <div class="title-underline" style="margin-top: 1rem;"></div>
         </div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 mb-6">
-        <div class="lg:col-span-3">
-            <p-button icon="pi pi-plus" 
-                     label="New Bill"
-                     styleClass="p-button-primary w-full transform transition-transform hover:scale-105"
-                     (click)="openNewBillModal()">
-            </p-button>
+    </div>    <!-- Status Filter Cards -->
+    <div class="filter-cards-container grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- Pending Bills Card -->
+        <div class="filter-card pending" 
+             [class.active]="activeStatusFilter === 'Pending'"
+             (click)="filterByStatus('Pending')">
+            <div class="filter-card-content">
+                <div class="filter-card-icon">
+                    <i class="pi pi-clock"></i>
+                </div>
+                <div class="filter-card-info">
+                    <h3 class="filter-card-title">Pending</h3>
+                    <p class="filter-card-count">{{ getStatusCount('Pending') }}</p>
+                </div>
+            </div>
         </div>
-    </div>    <app-new-bill-modal
-        [(visible)]="newBillModalVisible"
-        (billSaved)="onBillSaved($event)">
-    </app-new-bill-modal>    <app-edit-bill-modal
-        [(visible)]="editBillModalVisible"
-        [billToEdit]="billToEdit"
-        (billUpdated)="onBillUpdated($event)">
-    </app-edit-bill-modal>
 
-    <app-view-bill-modal
-        [(visible)]="viewBillModalVisible"
-        [billToView]="billToView">
-    </app-view-bill-modal>
+        <!-- Approved Bills Card -->
+        <div class="filter-card approved" 
+             [class.active]="activeStatusFilter === 'Approved'"
+             (click)="filterByStatus('Approved')">
+            <div class="filter-card-content">
+                <div class="filter-card-icon">
+                    <i class="pi pi-check-circle"></i>
+                </div>
+                <div class="filter-card-info">
+                    <h3 class="filter-card-title">Approved</h3>
+                    <p class="filter-card-count">{{ getStatusCount('Approved') }}</p>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Rejected Bills Card -->
+        <div class="filter-card rejected" 
+             [class.active]="activeStatusFilter === 'Rejected'"
+             (click)="filterByStatus('Rejected')">
+            <div class="filter-card-content">
+                <div class="filter-card-icon">
+                    <i class="pi pi-times-circle"></i>
+                </div>
+                <div class="filter-card-info">
+                    <h3 class="filter-card-title">Rejected</h3>
+                    <p class="filter-card-count">{{ getStatusCount('Rejected') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Data Table with Advanced Filtering -->
-    <div class="p-card">
-        <p-table #dt [value]="bills" dataKey="_id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" 
+    <div class="p-card">        <p-table #dt [value]="filteredBills" dataKey="_id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" 
                 [loading]="loading" [paginator]="true" 
                 [globalFilterFields]="['user', 'type', 'description', 'status']"
                 styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
@@ -48,11 +71,13 @@
                             <input pInputText type="text" class="w-full" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
                         </p-iconField>
                     </div>
-                    
-                    <div class="actions-container flex gap-2 md:justify-content-end">
+                      <div class="actions-container flex gap-2 md:justify-content-end">
                         <p-button [outlined]="true" icon="pi pi-filter-slash" 
                                  label="Clear Filters" 
                                  (click)="clear(dt)" />
+                        <p-button *ngIf="activeStatusFilter" [outlined]="true" icon="pi pi-list" 
+                                 label="Show All" 
+                                 (click)="filterByStatus(null)" />
                     </div>
                 </div>
             </ng-template>
@@ -76,11 +101,10 @@
                             Type
                             <p-columnFilter type="text" field="type" display="menu" />
                         </div>
-                    </th>
-                    <th style="min-width:10rem">
+                    </th>                    <th style="min-width:10rem">
                         <div class="flex items-center">
                             Amount
-                            <p-columnFilter type="numeric" field="price" display="menu" currency="EUR" />
+                            <p-columnFilter type="numeric" field="amount" display="menu" currency="EUR" />
                         </div>
                     </th>
                     <th style="min-width:10rem">
@@ -122,17 +146,16 @@
                     </td>
                     <td>
                         <strong>{{ bill.type }}</strong>
-                    </td>
-                    <td>
-                        <span class="text-bold">{{ (bill.price || bill.amount) | currency:'EUR' }}</span>
+                    </td>                    <td>
+                        <span class="text-bold">{{ bill.amount | currency:'EUR' }}</span>
                     </td>
                     <td>
                         {{ bill.date | date:'dd/MM/yyyy' }}
                     </td>
                     <td>
                         <p-tag [value]="bill.status" [severity]="getStatusSeverity(bill.status)"></p-tag>
-                    </td>                    <td>
-                        <div class="flex gap-2">
+                    </td>
+                    <td>                        <div class="flex gap-2">
                             <button pButton pRipple icon="pi pi-eye" 
                                     class="p-button-rounded p-button-text" 
                                     (click)="viewBill(bill)" pTooltip="View"></button>
@@ -151,7 +174,19 @@
                 <tr>
                     <td colspan="9" class="text-center p-4">No bills found.</td>
                 </tr>
-            </ng-template>
-        </p-table>
+            </ng-template>        </p-table>
     </div>
+
+    <!-- Edit Bill Modal -->
+    <app-edit-bill-modal
+        [(visible)]="editBillModalVisible"
+        [billToEdit]="billToEdit"
+        (billUpdated)="onBillUpdated($event)">
+    </app-edit-bill-modal>
+
+    <!-- View Bill Modal -->
+    <app-view-bill-modal
+        [(visible)]="viewBillModalVisible"
+        [billToView]="billToView">
+    </app-view-bill-modal>
 </div>

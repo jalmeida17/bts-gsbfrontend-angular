@@ -30,13 +30,11 @@ import { UserModel } from '../../../models/user.model';
 import { BillService } from '../../../services/bill.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import { NewBillModalComponent } from './components/newBill.component';
-import { EditBillModalComponent } from './components/editBill.component';
-import { ViewBillModalComponent } from './components/viewBill.component';
-import { AuthService } from '../../../services/auth.service';
+import { EditBillModalComponent } from '../dashboard/components/editBill.component';
+import { ViewBillModalComponent } from '../dashboard/components/viewBill.component';
 
 @Component({
-    selector: 'app-dashboard',
+    selector: 'app-admin-dashboard',
     standalone: true,
     imports: [
         CommonModule,
@@ -60,15 +58,15 @@ import { AuthService } from '../../../services/auth.service';
         AvatarModule,
         BadgeModule,
         RippleModule,
-        SelectModule,        IconFieldModule,        InputIconModule,
+        SelectModule,        IconFieldModule,
+        InputIconModule,
         ConfirmPopupModule,
-        NewBillModalComponent,
         EditBillModalComponent,
-        ViewBillModalComponent
+        ViewBillModalComponent,
     ],
     providers: [MessageService, ConfirmationService],
-    templateUrl: './dashboard.html',
-    styleUrl: './dashboard.scss',
+    templateUrl: './admin-dashboard.html',
+    styleUrl: './admin-dashboard.scss',
     animations: [
         trigger('slideIn', [
             transition(':enter', [
@@ -98,75 +96,48 @@ import { AuthService } from '../../../services/auth.service';
         ])
     ]
 })
-export class Dashboard implements OnInit {
+export class AdminDashboard implements OnInit {
     bills: BillModel[] = [];
-    newBillModalVisible = false;
+    filteredBills: BillModel[] = [];
+    loading = false;
+    searchValue: string | undefined;
+    
+    // Modal properties
     editBillModalVisible = false;
     viewBillModalVisible = false;
     billToEdit: BillModel | null = null;
     billToView: BillModel | null = null;
-    loading = false;
-    searchValue: string | undefined;
     
     // Filter values for column filters
     selectedStatus: string | null = null;
+    activeStatusFilter: string | null = 'Pending';
     
     statusOptions = [
         { label: 'Approved', value: 'approved' },
         { label: 'Pending', value: 'pending' },
         { label: 'Rejected', value: 'rejected' }
-    ];    constructor(
+    ];
+
+    constructor(
         private messageService: MessageService,
         private billService: BillService,
-        private confirmationService: ConfirmationService,
-        private authService: AuthService
+        private confirmationService: ConfirmationService
     ) {}
-    
-    ngOnInit() {
+      ngOnInit() {
         this.loadBills();
-    }    loadBills() {
+    }
+      loadBills() {
         this.loading = true;
         this.billService.getAllBills().subscribe({
-            next: (data) => {
-                // Get current authenticated user
-                const currentUser = this.authService.getCurrentUser();
-                
-                if (!currentUser) {
-                    this.messageService.add({ 
-                        severity: 'error', 
-                        summary: 'Error', 
-                        detail: 'No authenticated user found', 
-                        life: 3000 
-                    });
-                    this.loading = false;
-                    return;
-                }
-
-                // Filter bills to only show those belonging to the current user
-                const filteredBills = data.filter(bill => {
-                    // Handle different user reference formats
-                    let billUserId: string;
-                    
-                    if (typeof bill.user === 'object' && bill.user !== null) {
-                        // User is populated object
-                        billUserId = bill.user._id || '';
-                    } else if (typeof bill.user === 'string') {
-                        // User is just ID string
-                        billUserId = bill.user;
-                    } else {
-                        // Fallback - skip this bill
-                        return false;
-                    }
-                    
-                    return billUserId === currentUser.id;
-                });
-
-                this.bills = filteredBills.map(bill => ({
+            next: (data) => {                this.bills = data.map(bill => ({
                     ...bill,
                     date: new Date(bill.date),
                 }));
+                this.filteredBills = [...this.bills];
+                // Apply default filter to show pending bills
+                this.filterByStatus(this.activeStatusFilter);
                 this.loading = false;
-                console.log('Bills loaded successfully for user:', currentUser.id, this.bills);
+                console.log('Bills loaded successfully', this.bills);
             },
             error: (error) => {
                 console.error('Error loading bills', error);
@@ -179,12 +150,12 @@ export class Dashboard implements OnInit {
                 this.loading = false;
             }
         });
-    }
-    
-    clear(table: Table) {
+    }      clear(table: Table) {
         table.clear();
         this.searchValue = '';
         this.selectedStatus = null;
+        this.activeStatusFilter = "Pending";
+        this.filteredBills = [...this.bills];
     }
     
     onGlobalFilter(table: Table, event: Event) {
@@ -196,6 +167,23 @@ export class Dashboard implements OnInit {
         this.selectedStatus = value;
         filterCallback(value);
     }
+
+    filterByStatus(status: string | null) {
+        this.activeStatusFilter = status;
+        if (status === null) {
+            this.filteredBills = [...this.bills];
+        } else {
+            this.filteredBills = this.bills.filter(bill => 
+                bill.status.toLowerCase() === status.toLowerCase()
+            );
+        }
+    }   
+    getStatusCount(status: string): number {
+        return this.bills.filter(bill => 
+            bill.status.toLowerCase() === status.toLowerCase()
+        ).length;
+    }    
+   
     
     getStatusSeverity(status: string) {
         switch (status?.toLowerCase()) {
@@ -218,30 +206,7 @@ export class Dashboard implements OnInit {
         this.viewBillModalVisible = true;
     }
 
-    openNewBillModal() {
-        this.newBillModalVisible = true;
-    }    onBillSaved(event: { bill: any, file: File }) {
-        this.billService.createBill(event.bill, event.file).subscribe({
-            next: (createdBill) => {
-                this.messageService.add({ 
-                    severity: 'success', 
-                    summary: 'Success', 
-                    detail: 'Bill created successfully', 
-                    life: 3000 
-                });
-                this.loadBills();
-            },
-            error: (error) => {
-                console.error('Error creating bill', error);
-                this.messageService.add({ 
-                    severity: 'error', 
-                    summary: 'Error', 
-                    detail: 'Failed to create bill: ' + (error.message || 'Unknown error'), 
-                    life: 5000 
-                });
-            }
-        });
-    }    onBillUpdated(event: { bill: any, file: File | null }) {
+    onBillUpdated(event: { bill: any, file: File | null }) {
         if (event.file) {
             // Update with new file
             this.billService.updateBillWithFile(event.bill._id, event.bill, event.file).subscribe({
@@ -287,6 +252,29 @@ export class Dashboard implements OnInit {
                 }
             });
         }
+    }
+
+    onBillSaved(event: { bill: any, file: File }) {
+        this.billService.createBill(event.bill, event.file).subscribe({
+            next: (createdBill) => {
+                this.messageService.add({ 
+                    severity: 'success', 
+                    summary: 'Success', 
+                    detail: 'Bill created successfully', 
+                    life: 3000 
+                });
+                this.loadBills();
+            },
+            error: (error) => {
+                console.error('Error creating bill', error);
+                this.messageService.add({ 
+                    severity: 'error', 
+                    summary: 'Error', 
+                    detail: 'Failed to create bill: ' + (error.message || 'Unknown error'), 
+                    life: 5000 
+                });
+            }
+        });
     }
 
     confirmDelete(event: Event, bill: BillModel) {

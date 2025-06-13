@@ -13,6 +13,21 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface SignupRequest {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
+export interface SignupResponse {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -35,7 +50,6 @@ export class AuthService {
     // Check if user is already logged in on service initialization
     this.loadUserFromToken();
   }
-
   /**
    * Login user with email and password
    */
@@ -50,6 +64,19 @@ export class AuthService {
         }),
         catchError(error => {
           console.error('Login error:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  /**
+   * Register new user
+   */
+  signup(credentials: SignupRequest): Observable<SignupResponse> {
+    return this.http.post<SignupResponse>(`${this.apiUrl}/users`, credentials)
+      .pipe(
+        catchError(error => {
+          console.error('Signup error:', error);
           return throwError(() => error);
         })
       );
