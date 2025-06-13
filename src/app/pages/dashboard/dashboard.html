@@ -7,7 +7,8 @@
             <h1 class="title-text m-0 text-3xl font-bold">YOUR BILLS</h1>
             <div class="title-underline" style="margin-top: 1rem;"></div>
         </div>
-    </div>
+    </div>    
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 mb-6">
         <div class="lg:col-span-3">
             <p-button icon="pi pi-plus" 
@@ -16,10 +17,48 @@
                      (click)="openNewBillModal()">
             </p-button>
         </div>
-    </div>    <app-new-bill-modal
+    </div>
+      <p-divider></p-divider>
+
+    <!-- Charts Section -->
+    <div class="p-3 rounded-lg  border card-glass mb-4">
+        <!-- Chart Type Selection Buttons -->
+        <div class="flex justify-center gap-3">
+            <p-button 
+                label="Created Bills" 
+                [outlined]="selectedChartType !== 'bills'"
+                [severity]="selectedChartType === 'bills' ? 'primary' : 'secondary'"
+                icon="pi pi-chart-line"
+                styleClass="transform transition-transform hover:scale-105"
+                (click)="selectChartType('bills')">
+            </p-button>
+            <p-button 
+                label="Total Money" 
+                [outlined]="selectedChartType !== 'money'"
+                [severity]="selectedChartType === 'money' ? 'primary' : 'secondary'"
+                icon="pi pi-euro"
+                styleClass="transform transition-transform hover:scale-105"
+                (click)="selectChartType('money')">
+            </p-button>
+        </div>
+
+        <div class="chart-container" style="height: auto">
+            <p-chart type="line" 
+                     [data]="lineChartData" 
+                     [options]="lineChartOptions"
+                     [style]="{'height': '100%'}">
+            </p-chart>
+        </div>
+    </div>
+   
+
+
+    <app-new-bill-modal
         [(visible)]="newBillModalVisible"
         (billSaved)="onBillSaved($event)">
-    </app-new-bill-modal>    <app-edit-bill-modal
+    </app-new-bill-modal>    
+
+    <app-edit-bill-modal
         [(visible)]="editBillModalVisible"
         [billToEdit]="billToEdit"
         (billUpdated)="onBillUpdated($event)">
@@ -30,9 +69,10 @@
         [billToView]="billToView">
     </app-view-bill-modal>
     
+
     <!-- Data Table with Advanced Filtering -->
     <div class="p-card">
-        <p-table #dt [value]="bills" dataKey="_id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" 
+        <p-table #dt [value]="bills" dataKey="_id" [rows]="5" [rowsPerPageOptions]="[5, 10, 15]" 
                 [loading]="loading" [paginator]="true" 
                 [globalFilterFields]="['user', 'type', 'description', 'status']"
                 styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
@@ -136,7 +176,7 @@
                             <button pButton pRipple icon="pi pi-eye" 
                                     class="p-button-rounded p-button-text" 
                                     (click)="viewBill(bill)" pTooltip="View"></button>
-                            <button pButton pRipple icon="pi pi-trash" 
+                            <button *ngIf="bill.status === 'Pending'" pButton pRipple icon="pi pi-trash" 
                                     class="p-button-rounded p-button-text"
                                     (click)="confirmDelete($event, bill)" pTooltip="Delete"></button>
                             <button *ngIf="bill.status === 'Pending'" pButton pRipple icon="pi pi-pencil" 

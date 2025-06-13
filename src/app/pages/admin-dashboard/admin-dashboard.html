@@ -155,7 +155,17 @@
                     <td>
                         <p-tag [value]="bill.status" [severity]="getStatusSeverity(bill.status)"></p-tag>
                     </td>
-                    <td>                        <div class="flex gap-2">
+                    <td>                        
+                        <div class="flex gap-2">
+                            <button *ngIf="bill.status === 'Pending'" pButton pRipple icon="pi pi-check" 
+                                    class="p-button-rounded p-button-text" 
+                                    (click)="approveBill($event, bill)" pTooltip="Approve"></button>
+                            <button *ngIf="bill.status === 'Approved' || bill.status === 'Rejected'" pButton pRipple icon="pi pi-undo" 
+                                    class="p-button-rounded p-button-text" 
+                                    (click)="undoConfirmation($event, bill)" pTooltip="Undo Approval"></button>
+                            <button *ngIf="bill.status === 'Pending'" pButton pRipple icon="pi pi-times" 
+                                    class="p-button-rounded p-button-text" 
+                                    (click)="rejectBill($event, bill)" pTooltip="Reject"></button>
                             <button pButton pRipple icon="pi pi-eye" 
                                     class="p-button-rounded p-button-text" 
                                     (click)="viewBill(bill)" pTooltip="View"></button>

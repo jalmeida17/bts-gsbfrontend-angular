@@ -10,7 +10,8 @@ Application frontend développée en Angular pour le système de gestion GSB pou
 - **SCSS** - Styles personnalisés
 - **RxJS** - Gestion des observables
 - **Angular Router** - Navigation
-- **Angular Forms** - Gestion des formulaires
+- **Angular Forms** - Gestion des formulaires*
+- **Chart.js** - Création de stats
 
 ## Fonctionnalités Principales
 - 🔐 **Authentification et autorisation**
@@ -18,7 +19,7 @@ Application frontend développée en Angular pour le système de gestion GSB pou
 - 🌐 **Support multilingue**
 - 📱 **Interface responsive**
 - 🎨 **Mode sombre et clair avec variables CSS**
-- 📊 **Tableaux de bord interactifs**
+- 📊 **Tableaux de bord interactifs avec des statistiques**
 - 📋 **Gestion des formulaires**
 
 ## Structure du Projet

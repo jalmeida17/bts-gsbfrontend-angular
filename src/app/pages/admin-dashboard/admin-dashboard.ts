@@ -277,6 +277,120 @@ export class AdminDashboard implements OnInit {
         });
     }
 
+    approveBill(event: Event, bill: BillModel) {
+        this.confirmationService.confirm({
+            target: event.currentTarget as EventTarget,
+            message: 'Are you sure you want to approve this bill?',
+            icon: 'pi pi-check',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptButtonProps: {
+                label: 'Approve',
+                severity: 'success'
+            },
+            accept: () => {
+                this.billService.updateBill(bill._id, { status: 'Approved' }).subscribe({
+                    next: () => {
+                        this.messageService.add({ 
+                            severity: 'success', 
+                            summary: 'Success', 
+                            detail: 'Bill approved successfully', 
+                            life: 3000 
+                        });
+                        this.loadBills();
+                    },
+                    error: (error) => {
+                        console.error('Error approving bill', error);
+                        this.messageService.add({ 
+                            severity: 'error', 
+                            summary: 'Error', 
+                            detail: 'Failed to approve bill', 
+                            life: 3000 
+                        });
+                    }
+                });
+            },
+        });
+    }
+
+    undoConfirmation(event: Event, bill: BillModel) {
+        this.confirmationService.confirm({
+            target: event.currentTarget as EventTarget,
+            message: 'Are you sure you want to make this bill pending again?',
+            icon: 'pi pi-times',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true
+            },
+            accept: () => {
+                this.billService.updateBill(bill._id, { status: 'Pending' }).subscribe({
+                    next: () => {
+                        this.messageService.add({ 
+                            severity: 'success', 
+                            summary: 'Success', 
+                            detail: 'Bill made pending successfully', 
+                            life: 3000 
+                        });
+                        this.loadBills();
+                    },
+                    error: (error) => {
+                        console.error('Error making bill pending', error);
+                        this.messageService.add({ 
+                            severity: 'error', 
+                            summary: 'Error', 
+                            detail: 'Failed to make bill pending', 
+                            life: 3000 
+                        });
+                    }
+                });
+            },
+        });
+    }
+
+    rejectBill(event: Event, bill: BillModel) {
+        this.confirmationService.confirm({
+            target: event.currentTarget as EventTarget,
+            message: 'Are you sure you want to reject this bill?',
+            icon: 'pi pi-times',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptButtonProps: {
+                label: 'Reject',
+                severity: 'danger'
+            },
+            accept: () => {
+                this.billService.updateBill(bill._id, { status: 'Rejected' }).subscribe({
+                    next: () => {
+                        this.messageService.add({ 
+                            severity: 'success', 
+                            summary: 'Success', 
+                            detail: 'Bill rejected successfully', 
+                            life: 3000 
+                        });
+                        this.loadBills();
+                    },
+                    error: (error) => {
+                        console.error('Error rejecting bill', error);
+                        this.messageService.add({ 
+                            severity: 'error', 
+                            summary: 'Error', 
+                            detail: 'Failed to approve bill', 
+                            life: 3000 
+                        });
+                    }
+                });
+            },
+        });
+    }
+
+
     confirmDelete(event: Event, bill: BillModel) {
         this.confirmationService.confirm({
             target: event.currentTarget as EventTarget,

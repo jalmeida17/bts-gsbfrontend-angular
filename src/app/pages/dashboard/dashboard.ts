@@ -24,6 +24,7 @@ import { RippleModule } from 'primeng/ripple';
 import { SelectModule } from 'primeng/select';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { ChartModule } from 'primeng/chart';
 import { Table } from 'primeng/table';
 import { BillModel } from '../../../models/bill.model';
 import { UserModel } from '../../../models/user.model';
@@ -59,8 +60,8 @@ import { AuthService } from '../../../services/auth.service';
         TagModule,
         AvatarModule,
         BadgeModule,
-        RippleModule,
-        SelectModule,        IconFieldModule,        InputIconModule,
+        RippleModule,        SelectModule,        IconFieldModule,        InputIconModule,
+        ChartModule,
         ConfirmPopupModule,
         NewBillModalComponent,
         EditBillModalComponent,
@@ -98,8 +99,7 @@ import { AuthService } from '../../../services/auth.service';
         ])
     ]
 })
-export class Dashboard implements OnInit {
-    bills: BillModel[] = [];
+export class Dashboard implements OnInit {    bills: BillModel[] = [];
     newBillModalVisible = false;
     editBillModalVisible = false;
     viewBillModalVisible = false;
@@ -107,6 +107,15 @@ export class Dashboard implements OnInit {
     billToView: BillModel | null = null;
     loading = false;
     searchValue: string | undefined;
+    
+    // Chart data properties
+    pieChartData: any;
+    pieChartOptions: any;
+    lineChartData: any;
+    lineChartOptions: any;
+    
+    // Chart type selection
+    selectedChartType: 'bills' | 'money' = 'bills';
     
     // Filter values for column filters
     selectedStatus: string | null = null;
@@ -121,10 +130,10 @@ export class Dashboard implements OnInit {
         private confirmationService: ConfirmationService,
         private authService: AuthService
     ) {}
-    
-    ngOnInit() {
+      ngOnInit() {
         this.loadBills();
-    }    loadBills() {
+        this.initializeCharts();
+    }loadBills() {
         this.loading = true;
         this.billService.getAllBills().subscribe({
             next: (data) => {
@@ -159,13 +168,12 @@ export class Dashboard implements OnInit {
                     }
                     
                     return billUserId === currentUser.id;
-                });
-
-                this.bills = filteredBills.map(bill => ({
+                });                this.bills = filteredBills.map(bill => ({
                     ...bill,
                     date: new Date(bill.date),
                 }));
                 this.loading = false;
+                this.setupLineChart();
                 console.log('Bills loaded successfully for user:', currentUser.id, this.bills);
             },
             error: (error) => {
@@ -179,6 +187,177 @@ export class Dashboard implements OnInit {
                 this.loading = false;
             }
         });
+    }
+    
+    initializeCharts() {
+        this.setupLineChart();
+    }    setupLineChart() {
+        if (this.selectedChartType === 'bills') {
+            this.setupBillsChart();
+        } else if (this.selectedChartType === 'money') {
+            this.setupMoneyChart();
+        }
+    }
+
+    setupBillsChart() {
+        const monthlyData = this.getMonthlyBillsData();
+        
+        this.lineChartData = {
+            labels: monthlyData.labels,
+            datasets: [{
+                label: 'Bills Created',
+                data: monthlyData.data,
+                borderColor: '#2196F3',
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        this.lineChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        };
+    }
+
+    setupMoneyChart() {
+        const monthlyData = this.getMonthlyMoneyData();
+        
+        this.lineChartData = {
+            labels: monthlyData.labels,
+            datasets: [{
+                label: 'Total Amount (€)',
+                data: monthlyData.data,
+                borderColor: '#4CAF50',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        };
+
+        this.lineChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value: any) {
+                            return '€' + value.toLocaleString();
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context: any) {
+                            return 'Total: €' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    selectChartType(type: 'bills' | 'money') {
+        this.selectedChartType = type;
+        this.setupLineChart();
+    }
+
+
+    getStatusCounts() {
+        const counts = { approved: 0, pending: 0, rejected: 0 };
+        
+        this.bills.forEach(bill => {
+            switch(bill.status?.toLowerCase()) {
+                case 'approved':
+                    counts.approved++;
+                    break;
+                case 'pending':
+                    counts.pending++;
+                    break;
+                case 'rejected':
+                    counts.rejected++;
+                    break;
+            }
+        });
+        
+        return counts;
+    }    getMonthlyBillsData() {
+        const monthlyBills = new Map();
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        this.bills.forEach(bill => {
+            const date = new Date(bill.date);
+            const monthKey = `${months[date.getMonth()]} ${date.getFullYear()}`;
+            
+            if (monthlyBills.has(monthKey)) {
+                monthlyBills.set(monthKey, monthlyBills.get(monthKey) + 1);
+            } else {
+                monthlyBills.set(monthKey, 1);
+            }
+        });
+
+        const sortedEntries = Array.from(monthlyBills.entries()).sort((a, b) => {
+            const dateA = new Date(a[0].split(' ')[1] + '-' + (months.indexOf(a[0].split(' ')[0]) + 1) + '-01');
+            const dateB = new Date(b[0].split(' ')[1] + '-' + (months.indexOf(b[0].split(' ')[0]) + 1) + '-01');
+            return dateA.getTime() - dateB.getTime();
+        });
+
+        return {
+            labels: sortedEntries.map(entry => entry[0]),
+            data: sortedEntries.map(entry => entry[1])
+        };
+    }
+
+    getMonthlyMoneyData() {
+        const monthlyMoney = new Map();
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        // Filter only approved and pending bills
+        const validBills = this.bills.filter(bill => 
+            bill.status?.toLowerCase() === 'approved' || bill.status?.toLowerCase() === 'pending'
+        );
+        
+        validBills.forEach(bill => {
+            const date = new Date(bill.date);
+            const monthKey = `${months[date.getMonth()]} ${date.getFullYear()}`;
+            const amount = bill.amount || 0;
+            
+            if (monthlyMoney.has(monthKey)) {
+                monthlyMoney.set(monthKey, monthlyMoney.get(monthKey) + amount);
+            } else {
+                monthlyMoney.set(monthKey, amount);
+            }
+        });
+
+        const sortedEntries = Array.from(monthlyMoney.entries()).sort((a, b) => {
+            const dateA = new Date(a[0].split(' ')[1] + '-' + (months.indexOf(a[0].split(' ')[0]) + 1) + '-01');
+            const dateB = new Date(b[0].split(' ')[1] + '-' + (months.indexOf(b[0].split(' ')[0]) + 1) + '-01');
+            return dateA.getTime() - dateB.getTime();
+        });
+
+        return {
+            labels: sortedEntries.map(entry => entry[0]),
+            data: sortedEntries.map(entry => entry[1])
+        };
     }
     
     clear(table: Table) {

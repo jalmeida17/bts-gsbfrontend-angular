@@ -182,14 +182,7 @@
         border-radius: 2px;
     }
 
-    // Card and interaction styles
-    .card-glass {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border-radius: var(--border-radius);
-        transition: all 0.3s ease;
-        border: 1px solid var(--surface-border);
-    }
+
 
     .hover-scale {
         transition: transform 0.2s ease;
@@ -451,3 +444,37 @@
     border-radius: 8px;
     transition: all 0.3s;
   }
+
+  // Chart styles
+.chart-container {
+    position: relative;
+    width: 100%;
+    
+    canvas {
+        max-height: 100% !important;
+    }
+}
+
+.chart-wrapper {
+    background: var(--surface-card);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    h3 {
+        margin: 0;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--surface-border);
+    }
+}
+
+// Dark mode adjustments for charts
+:host-context(.dark) .chart-wrapper {
+    background: var(--surface-800);
+    border: 1px solid var(--surface-700);
+}

@@ -12,7 +12,7 @@
   }
 
   .card-glass {
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--surface-card);
         backdrop-filter: blur(10px);
         border-radius: var(--border-radius);
         transition: all 0.3s ease;

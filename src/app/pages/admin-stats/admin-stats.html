@@ -1,0 +1,145 @@
+<p-toast></p-toast>
+<div [@slideIn]="'right'" class="card">
+    <div class="flex flex-col items-center justify-center mb-8">
+        <div class="text-center">
+            <h1 class="title-text m-0 text-3xl font-bold">BILLS STATISTICS</h1>
+            <div class="title-underline" style="margin-top: 1rem;"></div>
+        </div>
+    </div>    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+        <div class="loading-spinner">
+            <i class="pi pi-spin pi-spinner"></i>
+        </div>
+        <p class="text-center mt-3" style="color: var(--text-color);">Loading statistics...</p>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!loading">
+        <!-- Period Filter -->
+        <p-dropdown 
+            [options]="periodOptions" 
+            [(ngModel)]="selectedPeriod"
+            (onChange)="onPeriodChange()"
+            optionLabel="label" 
+            optionValue="value"
+            placeholder="Select Period"
+            styleClass="mb-4">
+        </p-dropdown>
+
+
+        <!-- No Data State -->
+        <div *ngIf="totalStats.totalBills === 0" class="no-data-state text-center py-8">
+            <i class="pi pi-chart-bar text-6xl mb-4" style="color: var(--text-color-secondary);"></i>
+            <h3 class="text-xl font-semibold mb-2" style="color: var(--text-color);">No Bills Found</h3>
+            <p style="color: var(--text-color-secondary);">There are no bills available for the selected time period.</p>
+        </div>        <!-- Statistics Content -->
+        <div *ngIf="totalStats.totalBills > 0">            <!-- Statistics Overview Cards -->
+            <div class="filter-cards-container grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                <div class="filter-card stats-card total-bills">
+                    <div class="filter-card-content">
+                        <div class="filter-card-icon">
+                            <i class="pi pi-file"></i>
+                        </div>
+                        <div class="filter-card-info">
+                            <p class="filter-card-count">{{ totalStats.totalBills }}</p>
+                            <h3 class="filter-card-title">Total Bills</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-card stats-card total-amount">
+                    <div class="filter-card-content">
+                        <div class="filter-card-icon">
+                            <i class="pi pi-euro"></i>
+                        </div>
+                        <div class="filter-card-info">
+                            <p class="filter-card-count">{{ totalStats.totalAmount | currency:'EUR':'symbol':'1.0-0' }}</p>
+                            <h3 class="filter-card-title">Total Amount</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-card stats-card avg-amount">
+                    <div class="filter-card-content">
+                        <div class="filter-card-icon">
+                            <i class="pi pi-calculator"></i>
+                        </div>
+                        <div class="filter-card-info">
+                            <p class="filter-card-count">{{ totalStats.avgBillAmount | currency:'EUR':'symbol':'1.0-0' }}</p>
+                            <h3 class="filter-card-title">Avg. Amount</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-card stats-card pending-bills">
+                    <div class="filter-card-content">
+                        <div class="filter-card-icon">
+                            <i class="pi pi-clock"></i>
+                        </div>
+                        <div class="filter-card-info">
+                            <p class="filter-card-count">{{ totalStats.pendingBills }}</p>
+                            <h3 class="filter-card-title">Pending</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-card stats-card approved-bills">
+                    <div class="filter-card-content">
+                        <div class="filter-card-icon">
+                            <i class="pi pi-check-circle"></i>
+                        </div>
+                        <div class="filter-card-info">
+                            <p class="filter-card-count">{{ totalStats.approvedBills }}</p>
+                            <h3 class="filter-card-title">Approved</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-card stats-card rejected-bills">
+                    <div class="filter-card-content">
+                        <div class="filter-card-icon">
+                            <i class="pi pi-times-circle"></i>
+                        </div>
+                        <div class="filter-card-info">
+                            <p class="filter-card-count">{{ totalStats.rejectedBills }}</p>
+                            <h3 class="filter-card-title">Rejected</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- Monthly Overview Chart -->
+                <div class="chart-container lg:col-span-2">
+
+                        <div class="chart-wrapper card-glass">
+                            <p-chart 
+                                type="bar" 
+                                [data]="monthlyChartData" 
+                                [options]="monthlyChartOptions"
+                                height="400px">
+                            </p-chart>
+                        </div>
+
+                </div>
+
+                <!-- Amount Trend Chart -->
+                <div class="chart-container lg:col-span-2">
+
+                        <div class="chart-wrapper card-glass">
+                            <p-chart 
+                                type="line" 
+                                [data]="amountTrendData" 
+                                [options]="amountTrendOptions"
+                                height="400px"
+                                class="">
+                            </p-chart>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

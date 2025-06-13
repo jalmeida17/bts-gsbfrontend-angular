@@ -39,11 +39,11 @@ export class AppMenu implements OnDestroy {
             {
                 label: 'Accueil',
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] }]
-            },
-            ...(this.authService.isAdmin() ? [{
+            },            ...(this.authService.isAdmin() ? [{
                 label: 'Admin',
                 items: [
                     { label: 'Bill Manager', icon: 'pi pi-fw pi-id-card', routerLink: ['/admin'] },
+                    { label: 'Statistics', icon: 'pi pi-fw pi-chart-bar', routerLink: ['/admin-stats'] },
                 ]
             }] : []),
             // {
