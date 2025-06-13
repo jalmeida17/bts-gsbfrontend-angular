@@ -58,7 +58,6 @@ export class NewBillModalComponent {
   @Output() billSaved = new EventEmitter<any>();
 
   bill: any = {
-    title: '',
     description: '',
     amount: null,
     date: new Date(),
@@ -87,7 +86,6 @@ export class NewBillModalComponent {
 
   isFormValid(): boolean {
     return !!(
-      this.bill.title?.trim() &&
       this.bill.amount > 0 &&
       this.bill.type &&
       this.bill.date &&
@@ -117,7 +115,6 @@ export class NewBillModalComponent {
 
   resetForm() {
     this.bill = {
-      title: '',
       description: '',
       amount: null,
       date: new Date(),

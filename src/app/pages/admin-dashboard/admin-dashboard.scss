@@ -573,3 +573,101 @@
         }
     }
 }
+
+// Fixed width search and filter controls for admin dashboard
+.search-container {
+    width: 80% !important;
+    
+    .p-iconfield {
+        width: 100%;
+    }
+    
+    input {
+        width: 100%;
+    }
+}
+
+.actions-container {
+    width: 10% !important;
+    
+    .p-button {
+        width: 100%;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.25rem;
+        
+        .p-button-label {
+            font-size: 0.75rem;
+        }
+        
+        @media (max-width: 768px) {
+            font-size: 0.625rem;
+            padding: 0.4rem 0.2rem;
+            
+            .p-button-label {
+                display: none !important; // Hide text on very small screens, show only icon
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .p-button-label {
+                display: none !important; // Hide text on mobile, show only icon
+            }
+        }
+    }
+}
+
+.show-all-container {
+    width: 10% !important;
+    
+    .p-button {
+        width: 100%;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.25rem;
+        
+        .p-button-label {
+            font-size: 0.75rem;
+        }
+        
+        @media (max-width: 768px) {
+            font-size: 0.625rem;
+            padding: 0.4rem 0.2rem;
+            
+            .p-button-label {
+                display: none !important; // Hide text on very small screens, show only icon
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .p-button-label {
+                display: none !important; // Hide text on mobile, show only icon
+            }
+        }
+    }
+}
+
+// Additional mobile responsive rules to ensure text is hidden
+@media (max-width: 768px) {
+    .actions-container .p-button .p-button-label,
+    .show-all-container .p-button .p-button-label {
+        display: none !important;
+    }
+    
+    .actions-container .p-button,
+    .show-all-container .p-button {
+        padding: 0.4rem !important;
+        min-width: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .actions-container .p-button .p-button-label,
+    .show-all-container .p-button .p-button-label {
+        display: none !important;
+    }
+    
+    .actions-container .p-button,
+    .show-all-container .p-button {
+        padding: 0.3rem !important;
+        min-width: auto !important;
+    }
+}

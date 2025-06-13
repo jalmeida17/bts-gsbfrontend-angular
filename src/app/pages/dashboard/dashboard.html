@@ -76,11 +76,9 @@
                 [loading]="loading" [paginator]="true" 
                 [globalFilterFields]="['user', 'type', 'description', 'status']"
                 styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
-                [scrollable]="true">
-            
-            <ng-template pTemplate="caption">
-                <div class="flex flex-column md:flex-row md:align-items-center gap-3">
-                    <div class="search-container flex-grow-1">
+                [scrollable]="true">            <ng-template pTemplate="caption">
+                <div class="flex align-items-center gap-2">
+                    <div class="search-container" style="width: 90%;">
                         <p-iconField iconPosition="left" styleClass="w-full">
                             <p-inputIcon>
                                 <i class="pi pi-search"></i>
@@ -89,9 +87,11 @@
                         </p-iconField>
                     </div>
                     
-                    <div class="actions-container flex gap-2 md:justify-content-end">
+                    <div class="actions-container" style="width: 10%;">
                         <p-button [outlined]="true" icon="pi pi-filter-slash" 
-                                 label="Clear Filters" 
+                                 label="Clear" 
+                                 size="small"
+                                 styleClass="w-full"
                                  (click)="clear(dt)" />
                     </div>
                 </div>
@@ -99,12 +99,6 @@
 
             <ng-template #header>
                 <tr>
-                    <th style="min-width:8rem">
-                        <div class="flex items-center">
-                            ID
-                            <p-columnFilter type="text" field="_id" display="menu" />
-                        </div>
-                    </th>
                     <th style="min-width:12rem">
                         <div class="flex items-center">
                             Client
@@ -151,9 +145,6 @@
 
             <ng-template #body let-bill>
                 <tr>
-                    <td>
-                        <strong>{{ bill._id.slice(-6) }}</strong>
-                    </td>
                     <td>
                         <div class="flex items-center gap-2">
                             <i class="pi pi-user text-primary"></i>

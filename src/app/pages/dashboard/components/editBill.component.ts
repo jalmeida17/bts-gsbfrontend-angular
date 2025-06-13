@@ -60,7 +60,6 @@ export class EditBillModalComponent implements OnChanges {
   @Output() billUpdated = new EventEmitter<any>();
 
   bill: any = {
-    title: '',
     description: '',
     amount: null,
     date: new Date(),
@@ -80,7 +79,6 @@ export class EditBillModalComponent implements OnChanges {
   populateForm() {
     if (this.billToEdit) {
       this.bill = {
-        title: this.billToEdit.type || '', // Using type as title since that's what the form expects
         description: this.billToEdit.description || '',
         amount: this.billToEdit.amount || null,
         date: this.billToEdit.date ? new Date(this.billToEdit.date) : new Date(),
@@ -111,7 +109,6 @@ export class EditBillModalComponent implements OnChanges {
 
   isFormValid(): boolean {
     return !!(
-      this.bill.title?.trim() &&
       this.bill.amount > 0 &&
       this.bill.type &&
       this.bill.date &&
@@ -142,7 +139,6 @@ export class EditBillModalComponent implements OnChanges {
 
   resetForm() {
     this.bill = {
-      title: '',
       description: '',
       amount: null,
       date: new Date(),

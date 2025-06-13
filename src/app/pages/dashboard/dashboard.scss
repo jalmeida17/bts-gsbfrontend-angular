@@ -250,6 +250,48 @@
         }
     }
 
+    // Fixed width search and filter controls
+    .search-container {
+        width: 90% !important;
+        
+        .p-iconfield {
+            width: 100%;
+        }
+        
+        input {
+            width: 100%;
+        }
+    }
+
+    .actions-container {
+        width: 10% !important;
+        
+        .p-button {
+            width: 100%;
+            font-size: 0.75rem;
+            padding: 0.5rem 0.25rem;
+            
+            .p-button-label {
+                font-size: 0.75rem;
+            }
+            
+            @media (max-width: 768px) {
+                font-size: 0.625rem;
+                padding: 0.4rem 0.2rem;
+                
+                .p-button-label {
+                    display: none; // Hide text on very small screens, show only icon
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .p-button-label {
+                    display: none; // Hide text on mobile, show only icon
+                }
+            }
+        }
+    }
+
     // Form control styles
     .p-inputtext {
         border-radius: 1rem;
@@ -341,6 +383,43 @@
             
             .p-selectbutton {
                 flex-grow: 1;
+            }
+        }
+    }
+
+    @media (max-width: 576px) {
+        // Responsive search and filter controls
+        .search-container {
+            flex: 1;
+            min-width: 0; // Allows flex item to shrink below its content size
+            margin-bottom: 0.75rem;
+        }
+
+        .actions-container {
+            flex-shrink: 0;
+            width: 100%;
+            
+            .p-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        // Ensure proper spacing in table caption
+        .p-datatable .p-datatable-header {
+            padding: 1rem;
+            
+            @media (max-width: 576px) {
+                padding: 0.75rem;
+            }
+        }
+
+        // Prevent button text from wrapping on small screens
+        .p-button-label {
+            white-space: nowrap;
+            
+            @media (max-width: 576px) {
+                font-size: 0.875rem;
             }
         }
     }

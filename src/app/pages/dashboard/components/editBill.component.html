@@ -22,28 +22,7 @@
         </div>
         
         <div class="form-grid">
-          <div class="form-field">
-            <label for="title" class="field-label">
-              <i class="pi pi-tag label-icon"></i>
-              Title *
-            </label>
-            <p-iconfield>
-              <p-inputicon styleClass="pi pi-tag"></p-inputicon>
-              <input 
-                id="title"
-                type="text" 
-                pInputText 
-                [(ngModel)]="bill.title"
-                name="title"
-                placeholder="Enter bill title"
-                class="w-full"
-                required
-                #titleInput="ngModel">
-            </p-iconfield>
-            <small class="field-error" *ngIf="titleInput.invalid && titleInput.touched">
-              Title is required
-            </small>
-          </div>
+
 
           <div class="form-field">
             <label for="amount" class="field-label">
