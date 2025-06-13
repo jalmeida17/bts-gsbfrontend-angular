@@ -109,24 +109,40 @@
             </div>
           </div>
         </p-card>
-      </div>
-
-      <!-- Proof/Document Section -->
+      </div>      <!-- Proof/Document Section -->
       <div class="col-12" *ngIf="billToView.proof">
-        <p-card styleClass="h-full">
-          <div class="proof-section text-center">
-            <div class="mb-3">
-              <i class="pi pi-file text-4xl text-primary"></i>
+        <p-card header="Proof Document" styleClass="h-full">
+          <div class="proof-section">
+            <!-- Show image preview if it's an image -->
+            <div class="image-preview-section" *ngIf="isProofImage()">
+                        
+              <div class="proof-image-container text-center">
+                <p-image 
+                  [src]="billToView.proof" 
+                  alt="Proof document"
+                  width="100%"
+                  [preview]="true"
+                  appendTo="body"
+                  class="proof-image">
+                </p-image>
+              </div>
             </div>
-            <p class="text-600 mb-3">
-              Document attached to this bill
-            </p>
-            <p-button 
-              label="View Document" 
-              icon="pi pi-external-link" 
-              styleClass="p-button-outlined"
-              (click)="downloadProof()">
-            </p-button>
+            
+            <!-- Show file info for non-images -->
+            <div class="file-info-section text-center" *ngIf="!isProofImage()">
+              <div class="mb-3">
+                <i class="pi pi-file text-4xl text-primary"></i>
+              </div>
+              <p class="text-600 mb-3">
+                Document attached to this bill
+              </p>
+              <p-button 
+                label="View Document" 
+                icon="pi pi-external-link" 
+                styleClass="p-button-outlined"
+                (click)="downloadProof()">
+              </p-button>
+            </div>
           </div>
         </p-card>
       </div>

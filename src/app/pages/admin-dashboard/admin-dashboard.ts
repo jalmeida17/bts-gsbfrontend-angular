@@ -30,8 +30,8 @@ import { UserModel } from '../../../models/user.model';
 import { BillService } from '../../../services/bill.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import { EditBillModalComponent } from '../dashboard/components/editBill.component';
-import { ViewBillModalComponent } from '../dashboard/components/viewBill.component';
+import { EditBillModalComponent } from '../../components/editBill/editBill.component';
+import { ViewBillModalComponent } from '../../components/viewBill/viewBill.component';
 
 @Component({
     selector: 'app-admin-dashboard',
@@ -107,10 +107,12 @@ export class AdminDashboard implements OnInit {
     viewBillModalVisible = false;
     billToEdit: BillModel | null = null;
     billToView: BillModel | null = null;
-    
-    // Filter values for column filters
+      // Filter values for column filters
     selectedStatus: string | null = null;
     activeStatusFilter: string | null = 'Pending';
+    
+    // Mobile detection
+    isMobile = false;
     
     statusOptions = [
         { label: 'Approved', value: 'approved' },
@@ -122,9 +124,14 @@ export class AdminDashboard implements OnInit {
         private messageService: MessageService,
         private billService: BillService,
         private confirmationService: ConfirmationService
-    ) {}
-      ngOnInit() {
+    ) {}      ngOnInit() {
+        this.checkMobileDevice();
         this.loadBills();
+        
+        // Listen for window resize events
+        window.addEventListener('resize', () => {
+            this.checkMobileDevice();
+        });
     }
       loadBills() {
         this.loading = true;
@@ -146,11 +153,16 @@ export class AdminDashboard implements OnInit {
                     summary: 'Error', 
                     detail: 'Failed to load bills', 
                     life: 3000 
-                });
-                this.loading = false;
+                });                this.loading = false;
             }
         });
-    }      clear(table: Table) {
+    }
+
+    checkMobileDevice() {
+        this.isMobile = window.innerWidth < 768;
+    }
+      
+    clear(table: Table) {
         table.clear();
         this.searchValue = '';
         this.selectedStatus = null;

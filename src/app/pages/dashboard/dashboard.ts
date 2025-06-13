@@ -31,10 +31,10 @@ import { UserModel } from '../../../models/user.model';
 import { BillService } from '../../../services/bill.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import { NewBillModalComponent } from './components/newBill.component';
-import { EditBillModalComponent } from './components/editBill.component';
-import { ViewBillModalComponent } from './components/viewBill.component';
+import { NewBillModalComponent } from '../../components/newBill/newBill.component';
 import { AuthService } from '../../../services/auth.service';
+import { EditBillModalComponent } from '../../components/editBill/editBill.component';
+import { ViewBillModalComponent } from '../../components/viewBill/viewBill.component';
 
 @Component({
     selector: 'app-dashboard',

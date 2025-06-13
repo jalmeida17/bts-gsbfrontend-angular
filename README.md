@@ -17,7 +17,7 @@ Application frontend développée en Angular pour le système de gestion GSB pou
 - 🔐 **Authentification et autorisation**
 - 👤 **Gestion des profils utilisateurs**
 - 🌐 **Support multilingue**
-- 📱 **Interface responsive**
+- 📱 **Marche bien sur téléphone**
 - 🎨 **Mode sombre et clair avec variables CSS**
 - 📊 **Tableaux de bord interactifs avec des statistiques**
 - 📋 **Gestion des formulaires**

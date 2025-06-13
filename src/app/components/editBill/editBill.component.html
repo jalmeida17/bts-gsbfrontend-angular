@@ -6,8 +6,8 @@
   [draggable]="false"
   [resizable]="false"
   [closable]="true"
-  header="Create New Expense Bill"
-  styleClass="new-bill-modal"
+  header="Edit Expense Bill"
+  styleClass="edit-bill-modal"
   [@modalAnimation]>
   
   <p-divider></p-divider>
@@ -22,6 +22,7 @@
         </div>
         
         <div class="form-grid">
+
 
           <div class="form-field">
             <label for="amount" class="field-label">
@@ -95,7 +96,6 @@
           
         </div>
 
-
         <div class="form-field">
           <label for="description" class="field-label">
             <i class="pi pi-align-left label-icon"></i>
@@ -120,27 +120,59 @@
         <div class="section-header">
           <i class="pi pi-cloud-upload section-icon"></i>
           <h3>Proof Document</h3>
+        </div>        <!-- Show current file info if exists -->
+        <div class="current-file-info" *ngIf="billToEdit?.proof && !fileChanged">
+          <div class="file-info">
+            <i class="pi pi-file file-icon"></i>
+            <div class="file-details">
+              <span class="file-name">Current proof document</span>
+              <span class="file-size">{{ isCurrentProofImage() ? 'Image preview below' : 'Click to view or replace' }}</span>
+            </div>
+            <button
+              type="button"
+              class="p-button-text p-button-info p-button-sm view-file"
+              (click)="viewCurrentProof()"
+              pButton
+              icon="pi pi-download"
+              [title]="isCurrentProofImage() ? 'View in full size' : 'Open document'">
+            </button>
+          </div>          <!-- Show current image preview if it's an image -->
+          <div class="current-image-preview" *ngIf="isCurrentProofImage()">
+            <p-image 
+              [src]="billToEdit?.proof" 
+              alt="Current proof document"
+              width="100%"
+              [preview]="true"
+              appendTo="body"
+              class="proof-image">
+            </p-image>
+          </div>
         </div>
         
         <div class="upload-area">
           <p-fileupload
             mode="basic"
+            name="proof"
             accept="image/*,.pdf"
             [maxFileSize]="5000000"
             [auto]="false"
-            chooseLabel="Choose File"
+            chooseLabel="Choose New File"
             (onSelect)="onFileSelect($event)"
             (onRemove)="onFileRemove()"
             class="upload-button">
           </p-fileupload>
           
-          <div class="upload-info" *ngIf="!selectedFile">
+          <div class="upload-info" *ngIf="!selectedFile && !billToEdit?.proof">
             <i class="pi pi-info-circle"></i>
             <span>Upload receipt, invoice, or proof document (Max 5MB)</span>
             <small>Supported formats: JPG, PNG, PDF</small>
           </div>
 
-          <div class="file-preview" *ngIf="selectedFile">
+          <div class="upload-info" *ngIf="!selectedFile && billToEdit?.proof">
+            <i class="pi pi-info-circle"></i>
+            <span>Upload a new file to replace the current proof document</span>
+            <small>Supported formats: JPG, PNG, PDF (Max 5MB)</small>
+          </div>          <div class="file-preview" *ngIf="selectedFile">
             <div class="file-info">
               <i class="pi pi-file file-icon"></i>
               <div class="file-details">
@@ -154,6 +186,16 @@
                 pButton
                 icon="pi pi-times">
               </button>
+            </div>            <!-- Show new image preview if it's an image -->
+            <div class="new-image-preview" *ngIf="selectedFilePreview">
+              <p-image 
+                [src]="selectedFilePreview" 
+                alt="New proof document preview"
+                width="100%"
+                [preview]="true"
+                appendTo="body"
+                class="proof-image">
+              </p-image>
             </div>
           </div>
         </div>
@@ -175,7 +217,7 @@
       <button 
         type="button"
         pButton 
-        label="Create Bill" 
+        label="Update Bill" 
         icon="pi pi-check"
         class="p-button-primary"
         [disabled]="!isFormValid() || isSubmitting"

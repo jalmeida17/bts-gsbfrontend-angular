@@ -14,12 +14,13 @@ import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { RippleModule } from 'primeng/ripple';
+import { ImageModule } from 'primeng/image';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { BillModel } from '../../../models/bill.model';
 
 @Component({
   selector: 'app-new-bill-modal',
-  standalone: true,
-  imports: [
+  standalone: true,  imports: [
     CommonModule,
     FormsModule,
     DialogModule,
@@ -34,7 +35,8 @@ import { trigger, transition, style, animate } from '@angular/animations';
     DividerModule,
     IconFieldModule,
     InputIconModule,
-    RippleModule
+    RippleModule,
+    ImageModule
   ],
   templateUrl: './newBill.component.html',
   styleUrls: ['./newBill.component.scss'],
@@ -63,8 +65,8 @@ export class NewBillModalComponent {
     date: new Date(),
     type: '',
   };
-
   selectedFile: File | null = null;
+  selectedFilePreview: string | null = null;
   isSubmitting = false;
 
 
@@ -73,15 +75,30 @@ export class NewBillModalComponent {
     this.visibleChange.emit(false);
     this.resetForm();
   }
-
   onFileSelect(event: any) {
     if (event.files && event.files.length > 0) {
       this.selectedFile = event.files[0];
+      if (this.selectedFile) {
+        this.createFilePreview(this.selectedFile);
+      }
+    }
+  }
+
+  createFilePreview(file: File) {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.selectedFilePreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.selectedFilePreview = null;
     }
   }
 
   onFileRemove() {
     this.selectedFile = null;
+    this.selectedFilePreview = null;
   }
 
   isFormValid(): boolean {
@@ -112,7 +129,6 @@ export class NewBillModalComponent {
     this.isSubmitting = false;
     this.onHide();
   }
-
   resetForm() {
     this.bill = {
       description: '',
@@ -121,6 +137,7 @@ export class NewBillModalComponent {
       type: '',
     };
     this.selectedFile = null;
+    this.selectedFilePreview = null;
     this.isSubmitting = false;
   }
 

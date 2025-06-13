@@ -14,8 +14,9 @@ import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { RippleModule } from 'primeng/ripple';
+import { ImageModule } from 'primeng/image';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { BillModel } from '../../../../models/bill.model';
+import { BillModel } from '../../../models/bill.model';
 
 @Component({
   selector: 'app-edit-bill-modal',
@@ -32,13 +33,13 @@ import { BillModel } from '../../../../models/bill.model';
     DropdownModule,
     FileUploadModule,
     CardModule,
-    DividerModule,
-    IconFieldModule,
+    DividerModule,    IconFieldModule,
     InputIconModule,
-    RippleModule
+    RippleModule,
+    ImageModule
   ],
   templateUrl: './editBill.component.html',
-  styleUrls: ['./editBill.component.scss'],
+  styleUrl: './editBill.component.scss',
   animations: [
     trigger('modalAnimation', [
       transition(':enter', [
@@ -65,17 +66,16 @@ export class EditBillModalComponent implements OnChanges {
     date: new Date(),
     type: '',
   };
-
   selectedFile: File | null = null;
   isSubmitting = false;
   fileChanged = false;
+  selectedFilePreview: string | null = null;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['billToEdit'] && this.billToEdit) {
       this.populateForm();
     }
   }
-
   populateForm() {
     if (this.billToEdit) {
       this.bill = {
@@ -85,6 +85,7 @@ export class EditBillModalComponent implements OnChanges {
         type: this.billToEdit.type || '',
       };
       this.selectedFile = null;
+      this.selectedFilePreview = null;
       this.fileChanged = false;
     }
   }
@@ -93,17 +94,30 @@ export class EditBillModalComponent implements OnChanges {
     this.visible = false;
     this.visibleChange.emit(false);
     this.resetForm();
-  }
-
-  onFileSelect(event: any) {
+  }  onFileSelect(event: any) {
     if (event.files && event.files.length > 0) {
       this.selectedFile = event.files[0];
       this.fileChanged = true;
+      if (this.selectedFile) {
+        this.createFilePreview(this.selectedFile);
+      }
     }
   }
 
+  createFilePreview(file: File) {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.selectedFilePreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.selectedFilePreview = null;
+    }
+  }
   onFileRemove() {
     this.selectedFile = null;
+    this.selectedFilePreview = null;
     this.fileChanged = true;
   }
 
@@ -136,7 +150,6 @@ export class EditBillModalComponent implements OnChanges {
     this.isSubmitting = false;
     this.onHide();
   }
-
   resetForm() {
     this.bill = {
       description: '',
@@ -145,6 +158,7 @@ export class EditBillModalComponent implements OnChanges {
       type: '',
     };
     this.selectedFile = null;
+    this.selectedFilePreview = null;
     this.fileChanged = false;
     this.isSubmitting = false;
   }
@@ -155,10 +169,14 @@ export class EditBillModalComponent implements OnChanges {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
-
   viewCurrentProof() {
     if (this.billToEdit?.proof) {
       window.open(this.billToEdit.proof, '_blank');
     }
+  }  isCurrentProofImage(): boolean {
+    if (!this.billToEdit?.proof) return false;
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+    const url = this.billToEdit.proof.toLowerCase();
+    return imageExtensions.some(ext => url.includes(ext));
   }
 }

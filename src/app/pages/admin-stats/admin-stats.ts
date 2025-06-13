@@ -10,6 +10,7 @@ import { BillService } from '../../../services/bill.service';
 import { BillModel } from '../../../models/bill.model';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MessageService } from 'primeng/api';
+import { DividerModule } from 'primeng/divider';
 
 @Component({
     selector: 'app-admin-stats',
@@ -20,7 +21,8 @@ import { MessageService } from 'primeng/api';
         ButtonModule,
         DropdownModule,
         ToastModule,
-        FormsModule
+        FormsModule,
+        DividerModule
     ],
     templateUrl: './admin-stats.html',
     styleUrls: ['./admin-stats.scss'],

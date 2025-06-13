@@ -38,7 +38,8 @@
       .p-tag {
         margin-bottom: 0.5rem;
       }
-    }    
+    }
+
     .proof-section {
       padding: 2rem;
       border: 2px dashed var(--primary-color);
@@ -50,15 +51,26 @@
         border-color: var(--primary-color, #007bff);
         background: var(--primary-50, #e3f2fd);
       }
+
+      .image-preview-section {
+        margin-top: 1rem;
+        text-align: center;
+        
+        @media (max-width: 640px) {
+          margin-top: 0.75rem;
+        }
+      }
+
+      .file-info-section {
+        padding: 2rem;
+        text-align: center;
+        
+        .pi-file {
+          margin-bottom: 1rem;
+        }
+      }
     }
   }
-}
-.proof-section {
-      padding: 2rem;
-      border: 2px dashed var(--primary-color);
-      border-radius: 8px;
-
-      transition: all 0.3s ease;
 }
 
 // Responsive adjustments
@@ -85,7 +97,9 @@
     .field-group p {
       background: var(--surface-800);
       border-color: var(--surface-700);
-    }    .proof-section {
+    }
+
+    .proof-section {
       background: var(--surface-900, #1a1a1a);
       border: 2px dashed var(--primary-color, #007bff);
       transition: all 0.3s ease;
@@ -95,5 +109,52 @@
         border-color: var(--primary-color, #007bff);
       }
     }
+  }
+}
+
+// PrimeNG Image component styling
+:host ::ng-deep {
+  .proof-image {
+    max-width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    img {
+      max-height: 200px;
+      object-fit: contain;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 6px;
+      
+      &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      
+      @media (max-width: 640px) {
+        max-height: 150px;
+      }
+    }
+  }
+  
+  .p-image-preview-indicator {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.7);
+      transform: scale(1.1);
+    }
+  }
+
+  .p-image-preview-mask {
+    background: rgba(0, 0, 0, 0.8);
   }
 }

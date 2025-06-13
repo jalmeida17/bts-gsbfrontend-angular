@@ -70,10 +70,9 @@
                             <input pInputText type="text" class="w-full" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
                         </p-iconField>
                     </div>
-                    
-                    <div class="actions-container" style="width: 10%;">
+                      <div class="actions-container mr-1" style="width: 10%;">
                         <p-button [outlined]="true" icon="pi pi-filter-slash" 
-                                 label="Clear" 
+                                 [label]="isMobile ? '' : 'Clear'"
                                  size="small"
                                  styleClass="w-full"
                                  (click)="clear(dt)" />
@@ -81,7 +80,7 @@
                     
                     <div class="show-all-container" style="width: 10%;">
                         <p-button *ngIf="activeStatusFilter" [outlined]="true" icon="pi pi-list" 
-                                 label="Show All" 
+                                 [label]="isMobile ? '' : 'Show All'"
                                  size="small"
                                  styleClass="w-full"
                                  (click)="filterByStatus(null)" />
@@ -139,7 +138,7 @@
                     <td>
                         <div class="flex items-center gap-2">
                             <i class="pi pi-user text-primary"></i>
-                            <span>{{ bill.user }}</span>
+                            <span>{{ bill.user.name }}</span>
                         </div>
                     </td>
                     <td>

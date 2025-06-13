@@ -8,7 +8,7 @@ import { TagModule } from 'primeng/tag';
 import { ImageModule } from 'primeng/image';
 import { RippleModule } from 'primeng/ripple';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { BillModel } from '../../../../models/bill.model';
+import { BillModel } from '../../../models/bill.model';
 
 @Component({
   selector: 'app-view-bill-modal',
@@ -48,6 +48,7 @@ export class ViewBillModalComponent {
   onHide() {
     this.visible = false;
     this.visibleChange.emit(this.visible);
+    console.log(this.billToView?.user)
   }
 
   getStatusSeverity(status: string) {
@@ -78,7 +79,6 @@ export class ViewBillModalComponent {
     
     return this.billToView.user;
   }
-
   getUserEmail(): string {
     if (!this.billToView?.user) return '';
     
@@ -87,5 +87,12 @@ export class ViewBillModalComponent {
     }
     
     return '';
+  }
+
+  isProofImage(): boolean {
+    if (!this.billToView?.proof) return false;
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+    const url = this.billToView.proof.toLowerCase();
+    return imageExtensions.some(ext => url.includes(ext));
   }
 }
