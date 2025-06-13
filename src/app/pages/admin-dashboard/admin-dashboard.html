@@ -57,7 +57,7 @@
     <!-- Data Table with Advanced Filtering -->
     <div class="p-card">        <p-table #dt [value]="filteredBills" dataKey="_id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]" 
                 [loading]="loading" [paginator]="true" 
-                [globalFilterFields]="['user', 'type', 'description', 'status']"
+                [globalFilterFields]="['user.name', 'type', 'description', 'status']"
                 styleClass="p-datatable-gridlines p-datatable-striped p-datatable-sm"
                 [scrollable]="true">
               <ng-template pTemplate="caption">
@@ -144,7 +144,7 @@
                     <td>
                         <strong>{{ bill.type }}</strong>
                     </td>                    <td>
-                        <span class="text-bold">{{ bill.amount | currency:'EUR' }}</span>
+                        <span class="text-bold text-green-600">{{ bill.amount | currency:'EUR' }}</span>
                     </td>
                     <td>
                         {{ bill.date | date:'dd/MM/yyyy' }}

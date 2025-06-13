@@ -16,7 +16,7 @@ Application frontend développée en Angular pour le système de gestion GSB pou
 ## Fonctionnalités Principales
 - 🔐 **Authentification et autorisation**
 - 👤 **Gestion des profils utilisateurs**
-- 🌐 **Support multilingue**
+- 🌐 **Support multilingue (Pour la prochaine version)**
 - 📱 **Marche bien sur téléphone**
 - 🎨 **Mode sombre et clair avec variables CSS**
 - 📊 **Tableaux de bord interactifs avec des statistiques**
@@ -24,18 +24,48 @@ Application frontend développée en Angular pour le système de gestion GSB pou
 
 ## Structure du Projet
 ```
-src/
-├── app/
-│   ├── layout/
-│   │   └── component/
-│   │       ├── app.topbar.scss
-│   │       └── ...
-│   ├── core/
-│   ├── shared/
-│   ├── features/
-│   └── assets/
-├── environments/
-└── styles/
+bts-gsbfrontend-angular/
+├── src/
+│   ├── app/
+│   │   ├── components/
+│   │   │   ├── editBill/
+│   │   │   ├── newBill/
+│   │   │   └── viewBill/
+│   │   ├── layout/
+│   │   │   ├── component/
+│   │   │   │   ├── app.topbar.ts
+│   │   │   │   ├── app.menu.ts
+│   │   │   │   ├── app.sidebar.ts
+│   │   │   │   └── ...
+│   │   │   └── service/
+│   │   │       └── layout.service.ts
+│   │   ├── pages/
+│   │   │   ├── admin-dashboard/
+│   │   │   ├── admin-stats/
+│   │   │   ├── auth/
+│   │   │   ├── dashboard/
+│   │   │   └── notfound/
+│   │   └── transloco/
+│   ├── assets/
+│   │   ├── gsb_dark.png
+│   │   ├── gsb_light.png
+│   │   ├── i18n/
+│   │   └── layout/
+│   ├── guards/
+│   │   ├── admin.guard.ts
+│   │   └── auth.guard.ts
+│   ├── interceptors/
+│   │   └── auth.interceptor.ts
+│   ├── models/
+│   │   ├── bill.model.ts
+│   │   └── user.model.ts
+│   └── services/
+│       ├── auth.service.ts
+│       ├── bill.service.ts
+│       └── user.service.ts
+├── angular.json
+├── package.json
+└── tailwind.config.js
 ```
 
 ## Installation et Configuration

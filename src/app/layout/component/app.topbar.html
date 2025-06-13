@@ -21,8 +21,9 @@
             <i class="pi pi-ellipsis-v"></i>
         </button>
 
-        <div class="layout-topbar-menu hidden lg:block">
-            <div class="layout-topbar-menu-content">                <div class="user-profile-container">
+        <div class="layout-topbar-menu mr-8 hidden lg:block">
+            <div class="layout-topbar-menu-content">                
+                <div class="user-profile-container">
                     <button type="button" class="layout-topbar-action" (click)="showProfileDialog()">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
@@ -46,7 +47,7 @@
         </div>
     </div>
 
-    <div #topbarmenu class="layout-topbar-menu hidden lg:block" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService._state.configSidebarVisible}">
+    <!-- <div #topbarmenu class="layout-topbar-menu hidden lg:block" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService._state.configSidebarVisible}">
         <div class="top-nav-right-language">
             <img src="assets/img/flags/{{activeLanguage?.value}}.svg">
             <span>{{activeLanguage?.label}}</span>
@@ -81,9 +82,10 @@
                         <img src="assets/img/flags/ru.svg">
                         <span>Русский</span>
                     </div>
-                </div>            </div>
+                </div>            
+            </div>
         </div>
-    </div>
+    </div> -->
 </div>
 
 <!-- Profile Dialog -->
