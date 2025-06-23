@@ -32,13 +32,14 @@ export interface User {
   id: string;
   email: string;
   role: string;
+  subRole: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://bts-gsbbackend.onrender.com';
+  private apiUrl = 'http://localhost:3000';
   private tokenKey = 'auth_token';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -143,7 +144,8 @@ export class AuthService {
         const user: User = {
           id: payload.id,
           email: payload.email,
-          role: payload.role
+          role: payload.role,
+          subRole: payload.subRole || '' 
         };
         this.currentUserSubject.next(user);
       } catch (error) {

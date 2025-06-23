@@ -8,7 +8,7 @@ import { BillModel } from '../models/bill.model';
   providedIn: 'root'
 })
 export class BillService {
-  private apiUrl = 'https://bts-gsbbackend.onrender.com/bills';
+  private apiUrl = 'http://localhost:3000/bills';
   
   constructor(private http: HttpClient) { }
 

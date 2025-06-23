@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://bts-gsbbackend.onrender.com/users';
+  private apiUrl = 'http://localhost:3000/users';
 
   constructor(
     private http: HttpClient,
